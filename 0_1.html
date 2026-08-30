@@ -593,7 +593,7 @@
   <header class="bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white p-4 flex flex-col items-center text-center">
     <img src="./0_1_files/Logo.png" alt="Logo" width="100" height="100" class="mb-2">
     <h1 class="text-xl font-bold uppercase">
-      Shri Shiddeshwar Co-Op Bank Ltd, Vijayapur
+      Vijay Co-op Bank, Vijayapur
     </h1>
   </header>
 
@@ -659,7 +659,7 @@
 
     <!-- ✅ Footer -->
   <footer class="bg-gray-800 text-white text-center p-4 mt-10">
-    © Shri Shiddeshwar Co-Op Bank Ltd, Vijayapur || All rights reserved.&nbsp;&nbsp;&nbsp;<span>Bank Enquiry(For more information): +91-8867757807</span>||&nbsp;&nbsp;&nbsp;<span>For Technical Assistance : +91-7019671788</span>
+    © Vijay Co-op Bank, Vijayapur || All rights reserved.&nbsp;&nbsp;&nbsp;<span>Bank Enquiry(For more information): +91-8867757807</span>||&nbsp;&nbsp;&nbsp;<span>For Technical Assistance : +91-7019671788</span>
   </footer>
 
   <script src="./0_1_files/jquery-3.7.1.min.js.download" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -667,4 +667,4 @@
   <script src="./0_1_files/comman.js.download"></script>
 
 
-<script>document.getElementById('job_select')?.addEventListener('submit',function(e){e.preventDefault();if(!document.getElementById('job')?.value){document.getElementById('job_err').textContent='Please select a job.';return}location.href='1.html'})</script></body></html>
+<script>document.getElementById('job_select')?.addEventListener('submit',function(e){e.preventDefault();const job=document.getElementById('job')?.value;if(!job){document.getElementById('job_err').textContent='Please select a job.';return}const name=document.getElementById('job').selectedOptions[0].textContent.trim();location.href='1.html?job='+encodeURIComponent(name)})</script></body></html>
