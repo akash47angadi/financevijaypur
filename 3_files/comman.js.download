@@ -1,0 +1,2638 @@
+$(document).ready(function(e){
+    
+  
+    
+/*-------------------Checking Alpha Numeric-------------------------------------*/
+/*$(".alpha_numeric_check").keypress(function(e) {
+    var charCode = e.which || e.keyCode;
+
+    // Allow: 0-9, A-Z, a-z, apostrophe (39)
+    if (
+        (charCode >= 48 && charCode <= 57) ||  // 0-9
+        (charCode >= 65 && charCode <= 90) ||  // A-Z
+        (charCode >= 97 && charCode <= 122) || // a-z
+        charCode === 39                        // apostrophe (')
+    ) {
+        return true;
+    }
+
+    return false;
+});*/
+
+
+$(".alpha_numeric_check").on("input", function () {
+    this.value = this.value.replace(/[^a-zA-Z0-9']/g, '');
+});
+
+$(".only_number").on("input", function () {
+    this.value = this.value.replace(/[^0-9]/g, '');
+});
+
+
+
+/*-------------------Mobile-------------------------------------*/
+$(".mob").keypress(function(e){
+    //alert(e.keyCode);
+var val = $(this).val();
+if (val.length>=10)
+  return false;
+return true;
+});
+
+$(".adhar").keypress(function(e){
+  //alert(e.keyCode);
+var val = $(this).val();
+if (val.length>=12)
+return false;
+return true;
+});
+
+$("#utrNumber").keypress(function(e){
+  //alert(e.keyCode);
+var val = $(this).val();
+if (val.length>=12)
+return false;
+return true;
+});
+
+$(".gst").keypress(function(e){
+  //alert(e.keyCode);
+var val = $(this).val();
+if (val.length>=15)
+return false;
+return true;
+});
+
+
+$(".pan").keypress(function(e){
+  //alert(e.keyCode);
+var val = $(this).val();
+if (val.length>=10)
+return false;
+return true;
+
+});
+
+/*$(".only_number").keypress(function(e){
+    //alert(e.which);
+    charCode=e.which;
+if ((charCode >= 48 && charCode <= 57))
+  return true;
+return false;
+
+});*/
+
+/*$(".only_number_dec").keypress(function(e){
+  //alert(e.which);
+  charCode=e.which;
+if ((charCode >= 48 && charCode <= 57) || charCode == 46)
+return true;
+return false;
+
+});*/
+
+$(".only_number_dec").on("input", function () {
+    let value = $(this).val();
+
+    // Allow only digits and one dot (.)
+    // Remove invalid characters
+    value = value.replace(/[^0-9.]/g, '');
+
+    // Allow only one decimal point
+    let parts = value.split('.');
+    if (parts.length > 2) {
+        value = parts[0] + '.' + parts[1];
+    }
+
+    $(this).val(value);
+});
+
+
+$(".only_number_special_char").keypress(function(e){
+    //alert(e.which);
+    charCode=e.which;
+if ((charCode >= 48 && charCode <= 57 )|| charCode == 47 )
+  return true;
+return false;
+
+});
+
+$('#downloadForm').submit(function(e) {
+        e.preventDefault();
+        
+        var isValid = true;
+        
+        // Mobile Number validation
+        var mobileNumber = $('#mobileNumber').val();
+        if (mobileNumber === '' || !/^\d{10}$/.test(mobileNumber)) {
+            $('#mobileNumberError').show();
+            isValid = false;
+        } else {
+            $('#mobileNumberError').hide();
+        }
+        
+        // UTR Number validation
+        var utrNumber = $('#utrNumber').val();
+        if (utrNumber === '' || !/^\d{12}$/.test(utrNumber)) {
+            $('#utrNumberError').show();
+            isValid = false;
+        } else {
+            $('#utrNumberError').hide();
+        }
+        
+        // Date of Birth validation
+        var dob = $('#dob').val();
+        if (dob === '') {
+            $('#dobError').show();
+            isValid = false;
+        } else {
+            $('#dobError').hide();
+        }
+        
+        if (isValid) {
+            // Submit the form data via AJAX or any other method
+            // $.ajax({ ... });
+            
+            $.ajax({
+
+          url:$(this).attr("action"),
+          dataType : "JSON",
+          data: $(this).serialize(),
+          type: "post",
+          success: function(response)
+          {
+            // alert(data);
+             $(".loader").removeClass("d-block");
+             $(".loader").addClass("d-none");
+             let msg_type = '';
+             if(response.code==1)
+             {
+                 $(".btn_download").attr("href",response.url);
+                 $(".btn_download").removeClass("hidden");
+                 $("#err_display").html("");
+                 msg_type = 'Success';
+             }
+             else
+             {
+                $(".btn_download").addClass("hidden"); 
+                $("#err_display").html("<i class='fa fa-exclamation-triangle'></i> "+response.msg);
+                msg_type= 'Error';
+             }
+             
+               $.toast({
+    heading: msg_type,
+    text: response.msg,
+    showHideTransition: 'slide',
+    position:'top-right',
+    icon: msg_type
+})     
+            
+             //$(".next-btn-payment").attr("disabled",true);
+          },
+          error:function( jqXHR,textStatus,errorThrown){
+            alert(errorThrown);
+            $(".btn_submit").attr('disabled',false);
+          }
+
+
+        })
+            
+        }
+    });
+    
+    $("#job_select").submit(function(e){
+        
+        e.preventDefault();
+        
+        let job = $("#job").val();
+        let job_name = $("#job option:selected").text();
+        let exam_fee = $("#job option:selected").data("amount");
+       // console.log(exam_fee)
+        //alert(exam_fee)
+        let driving_licence = $("#driving_licence").text();
+        let error =0;
+        if(job=="")
+        {
+            $("#job_err").html("PLEASE SELECT THE JOB YOU ARE APPLYING");
+            error++;
+        }
+        else
+        {
+          $("#job_err").html("");  
+          /*if(job_name=="Driver")
+          {
+                if(driving_licence=="")
+              {
+            $("#driving_licence_Error").html("PLEASE SELECT THE DRIVING LICENCE");
+            error++;
+            }
+           else
+           {
+             $("#driving_licence_Error").html("");  
+           }
+          }
+          else
+          {
+              
+          }*/
+        }
+        
+       
+        
+        if(error==0)
+        {
+            //window.open($(this).attr("action")+job+"/"+job_name,"self");
+            window.location.replace($(this).attr("action")+btoa(unescape(encodeURIComponent(job)))+"/"+btoa(unescape(encodeURIComponent(job_name)))+"/"+btoa(unescape(encodeURIComponent(exam_fee))));
+        }
+        
+    });
+    
+    $("#candidateMobile").keypress(function(e){
+        //console.log($(this).val());
+        if($(this).val().length>=10)
+         return false;
+    })
+    
+     $("#aadharNumber").keypress(function(e){
+        //console.log($(this).val());
+        if($(this).val().length>=12)
+         return false;
+    })
+    
+   /* $("#job").change(function(e){
+        if($(this).val()=="JB0009")
+        {
+            $("#driving_licence").removeClass("hidden");
+        }
+        else
+        {
+           $("#driving_licence").addClass("hidden");
+        }
+    });*/
+    
+    $(".next-btn-basic").click(function(e){
+        let driving_licence = $("#driving_licence").val();
+        if($("#job_name").val()=="Driver")
+        {
+             if(driving_licence=="")
+        {
+            $("#driving_licence_Error").html("<i class='fa fa-exclamation-triangle'></i> Please Upload Driving Licence");
+            error++;
+        }
+        else
+        {
+            $("#driving_licence_Error").html("");
+        }
+        
+        }
+        
+        let candidateFName = $("#candidateFName").val();
+        let candidateLName = $("#candidateLName").val();
+        let parentName = $("#parentName").val();
+    let gender = $("#gender").val();
+    let postalState = $("#postalState").val();
+let postalDistrict = $("#postalDistrict").val();
+let postalTaluk = $("#postalTaluk").val();
+let postalPincode = $("#postalPincode").val();
+
+let permanentState = $("#permanentState").val();
+let permanentDistrict = $("#permanentDistrict").val();
+let permanentTaluk = $("#permanentTaluk").val();
+let permanentPincode = $("#permanentPincode").val();
+    let postalAddress = $("#postalAddress").val();
+    let permanentAddress = $("#permanentAddress").val();
+    let casteReligion = $("#casteReligion").val();
+    let casteCategory = $("#casteCategory").val();
+    let nationality = $("#nationality").val();
+    let dateOfBirth = $("#dateOfBirth").val();
+    let aadharNumber = $("#aadharNumber").val();
+    let candidateMobile = $("#candidateMobile").val();
+    let candidateEmailID = $("#candidateEmailID").val();
+     let candidatePhoto = $("#candidatePhoto").val();
+    let candidateSign = $("#candidateSign").val();
+    
+        let error=0;
+        
+        if(candidateFName=="")
+        {
+            $("#candidateFNameError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Candidate First Name");
+            error++;
+        }
+        else
+        {
+            $("#candidateFNameError").html("");
+        }
+        
+         /*if(candidateLName=="")
+        {
+            $("#candidateLNameError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Candidate Last Name");
+            error++;
+        }
+        else
+        {
+            $("#candidateLNameError").html("");
+        }*/
+        
+        if(parentName == "") {
+        $("#parentNameError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Parent's Name");
+        error++;
+    } else {
+        $("#parentNameError").html("");
+    }
+
+    if(gender == "") {
+        $("#genderError").html("<i class='fa fa-exclamation-triangle'></i> Please Select Gender");
+        error++;
+    } else {
+        $("#genderError").html("");
+    }
+    
+    // Validate Candidate Mobile
+if(candidateMobile == "") {
+    $("#candidateMobileError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Mobile Number");
+    error++;
+} else {
+    // Validate Mobile Number Format
+    let mobilePattern = /^[0-9]{10}$/; // Adjust the regex pattern as per your requirements
+    if(!mobilePattern.test(candidateMobile)) {
+        $("#candidateMobileError").html("<i class='fa fa-exclamation-triangle'></i> Invalid Mobile Number");
+        error++;
+    } else {
+        $("#candidateMobileError").html("");
+    }
+}
+
+// Validate Candidate Email ID
+if(candidateEmailID != "") {
+     // Validate Email Format
+    let emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/; // Basic email format pattern
+    if(!emailPattern.test(candidateEmailID)) {
+        $("#candidateEmailIDError").html("<i class='fa fa-exclamation-triangle'></i> Invalid Email ID");
+        error++;
+    } else {
+        $("#candidateEmailIDError").html("");
+    }
+} else {
+   $("#candidateEmailIDError").html("");
+}
+
+// Postal State
+if(postalState == "") {
+    $("#postalStateError").html("<i class='fa fa-exclamation-triangle'></i> Please Select State");
+    error++;
+} else {
+    $("#postalStateError").html("");
+}
+
+// Postal District
+if(postalDistrict == "") {
+    $("#postalDistrictError").html("<i class='fa fa-exclamation-triangle'></i> Please Select District");
+    error++;
+} else {
+    $("#postalDistrictError").html("");
+}
+
+// Postal Taluk
+if(postalTaluk == "") {
+    $("#postalTalukError").html("<i class='fa fa-exclamation-triangle'></i> Please Select Taluk");
+    error++;
+} else {
+    $("#postalTalukError").html("");
+}
+
+// Postal PIN
+if(postalPincode == "") {
+    $("#postalPincodeError").html("<i class='fa fa-exclamation-triangle'></i> Please Enter PIN Code");
+    error++;
+} else {
+
+    let pinPattern = /^[0-9]{6}$/;
+
+    if(!pinPattern.test(postalPincode)) {
+        $("#postalPincodeError").html("<i class='fa fa-exclamation-triangle'></i> PIN Code must be 6 digits");
+        error++;
+    } else {
+        $("#postalPincodeError").html("");
+    }
+}
+
+    if(postalAddress == "") {
+        $("#postalAddressError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Postal Address");
+        error++;
+    } else {
+        $("#postalAddressError").html("");
+    }
+    
+    // Permanent State
+if(permanentState == "") {
+    $("#permanentStateError").html("<i class='fa fa-exclamation-triangle'></i> Please Select State");
+    error++;
+} else {
+    $("#permanentStateError").html("");
+}
+
+// Permanent District
+if(permanentDistrict == "") {
+    $("#permanentDistrictError").html("<i class='fa fa-exclamation-triangle'></i> Please Select District");
+    error++;
+} else {
+    $("#permanentDistrictError").html("");
+}
+
+// Permanent Taluk
+if(permanentTaluk == "") {
+    $("#permanentTalukError").html("<i class='fa fa-exclamation-triangle'></i> Please Select Taluk");
+    error++;
+} else {
+    $("#permanentTalukError").html("");
+}
+
+// Permanent PIN
+if(permanentPincode == "") {
+    $("#permanentPincodeError").html("<i class='fa fa-exclamation-triangle'></i> Please Enter PIN Code");
+    error++;
+} else {
+
+    let pinPattern = /^[0-9]{6}$/;
+
+    if(!pinPattern.test(permanentPincode)) {
+        $("#permanentPincodeError").html("<i class='fa fa-exclamation-triangle'></i> PIN Code must be 6 digits");
+        error++;
+    } else {
+        $("#permanentPincodeError").html("");
+    }
+}
+
+if ($("#sameAsPostal").is(":checked")) {
+    $("#sameAsPostal").trigger("change");
+}
+
+    if(permanentAddress == "") {
+        $("#permanentAddressError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Permanent Address");
+        error++;
+    } else {
+        $("#permanentAddressError").html("");
+    }
+
+    if(casteReligion == "") {
+        $("#casteReligionError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Caste/Religion");
+        error++;
+    } else {
+        $("#casteReligionError").html("");
+    }
+
+    if(casteCategory == "") {
+        $("#casteCategoryError").html("<i class='fa fa-exclamation-triangle'></i> Please Select Caste Category");
+        error++;
+    } else {
+        $("#casteCategoryError").html("");
+        if(casteCategory == "sc" || casteCategory == "st" || casteCategory === "cat-1" || casteCategory === "cat-2(A)" || casteCategory === "cat-2(B)" || casteCategory === "cat-3(A)" || casteCategory === "cat-3(B)") {
+            if($("#caste_certificate").val()=="")
+           {
+              $("#casteCategoryError").html("<i class='fa fa-exclamation-triangle'></i> Please Upload Caste Certificate");
+              error++;
+           }
+           else
+           {
+             $("#casteCategoryError").html("");  
+           }
+        }
+    }
+
+    if(nationality == "") {
+        $("#nationalityError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Nationality");
+        error++;
+    } else {
+        $("#nationalityError").html("");
+    }
+
+if (dateOfBirth == "") {
+
+    $("#dateOfBirthError").html(
+        "<i class='fa fa-exclamation-triangle'></i> Please Provide Date of Birth"
+    );
+
+    error++;
+
+} else {
+
+    if (!validateAge()) {
+        error++;
+    }
+}
+
+    if(aadharNumber == "") {
+        $("#aadharNumberError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Aadhar Number");
+        error++;
+    } else {
+        $("#aadharNumberError").html("");
+         let adharPattern = /^[0-9]{12}$/; // Adjust the regex pattern as per your requirements
+    if(!adharPattern.test(aadharNumber)) {
+        $("#aadharNumberError").html("<i class='fa fa-exclamation-triangle'></i> Adhar Number Should be 12 Digits");
+        error++;
+    } else {
+        $("#aadharNumberError").html("");
+    }
+    }
+    
+    if(candidatePhoto == "") {
+        $("#candidatePhotoError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Photo");
+        error++;
+    } else {
+        $("#candidatePhotoError").html("");
+    }
+    
+     if(candidateSign == "") {
+        $("#candidateSignError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Signature");
+        error++;
+    } else {
+        $("#candidateSignError").html("");
+    }
+//console.log($("input[name='widow']:checked").val()+"/"+$("input[name='x_army']:checked").val());
+    if(error == 0) {
+        // Proceed to next step or submit the form
+        // window.location.replace("next_page_url");
+        /*$("#basic-card").addClass("hidden");
+        $("#education-card").removeClass("hidden").fadeIn();
+        $("#languages-card").addClass("hidden");
+        $("#skills-card").addClass("hidden");
+        $("#payment-card").addClass("hidden");*/
+         $('#basic-card').fadeOut(function() {
+             
+              // Show the #education-card with animation
+                // PUC and Degree remain visible for all jobs.
+    // For JB0004, JB0005, JB0006 and JB0007:
+    // SSLC = mandatory
+    // PUC   = optional
+    // Degree = optional
+               
+               $("#education-card").removeClass("hidden").fadeIn();
+           });
+    }
+    });
+    
+      $(".prev-btn-edu").click(function(e){ 
+        let error = 0;
+        if(error == 0) {
+        // Proceed to next step or submit the form
+        // window.location.replace("next_page_url");
+         $('#education-card').fadeOut(function() {
+              // Show the #education-card with animation
+               $("#basic-card").removeClass("hidden").fadeIn(500);
+           });
+          }
+    });
+    
+    $("#degreeObtainedMarks").blur(function (e) {
+
+    let degreepercentage = parseFloat($("#degreePercentage").val());
+    let job_name = $("#job_name").val();
+    let category = $("#casteCategory").val();
+    let x_army = $("input[name='x_army']:checked").val();
+
+    // Peon / Driver do not require Degree
+    if (job_name == "Peon" || job_name == "Driver") {
+        $("#degreeObtainedMarksError").html("");
+        return;
+    }
+
+    // Categories / X-Army eligible for below 45%
+    let relaxedDegree = (
+        category == "sc" ||
+        category == "st" ||
+        category == "cat-1" ||
+        x_army == "yes"
+    );
+
+    if (isNaN(degreepercentage)) {
+        $("#degreeObtainedMarksError").html("");
+        return;
+    }
+
+    if (relaxedDegree) {
+
+        // No 45% restriction for these categories/X-Army
+        $("#degreeObtainedMarksError").html("");
+
+    } else {
+
+        // Other categories require minimum 60%
+        if (degreepercentage < 60) {
+            $("#degreeObtainedMarksError").html(
+                "<i class='fa fa-exclamation-triangle'></i> " +
+                "Minimum Degree Percentage Must Be 60% for this Category"
+            );
+        } else {
+            $("#degreeObtainedMarksError").html("");
+        }
+    }
+});
+    
+    $(".next-btn-edu").click(function(e){ 
+         let error = 0;
+         let job_name = $("#job_name").val();
+         let category = $("#casteCategory").val();
+         
+         const sslcOnlyJobs = ["Nayak/Attender", "Driver", "Peon", "Night-Watchman"];
+         const isSSLCOnlyJob = sslcOnlyJobs.includes(job_name);
+         
+         let sslcBoard = $("#sslcBoard").val();
+        if(sslcBoard == "") {
+        $("#sslcBoardError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide SSLC Board");
+        error++;
+    } else {
+        $("#sslcBoardError").html("");
+        if(sslcBoard == "others")
+        {
+            if($("#others").val()=="")
+            {
+                $("#sslcBoardError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Other Option");
+            }
+            else
+            {
+                $("#sslcBoardError").html("");
+            }
+        }
+    }
+            let sslcTotalMarks = $("#sslcTotalMarks").val();
+        if(sslcTotalMarks == "") {
+            $("#sslcTotalMarksError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Total Marks for SSLC");
+            error++;
+        } else {
+            $("#sslcTotalMarksError").html("");
+        }
+
+        let sslcObtainedMarks = $("#sslcObtainedMarks").val();
+        let sslcPercentage = $("#sslcPercentage").val();
+        if(sslcObtainedMarks == "") {
+            $("#sslcObtainedMarksError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Obtained Marks for SSLC");
+            error++;
+        } else {
+            $("#sslcObtainedMarksError").html("");
+            
+            }
+        
+        
+
+        
+        /*if(sslcPercentage == "") {
+            $("#sslcPercentageError").html("<i class='fa fa-exclamation-triangle'></i> Please Provide Percentage for SSLC");
+            error++;
+        } else {
+            $("#sslcPercentageError").html("");
+        }*/
+
+let pucBoard = $("#pucBoard").val();
+let pucTotalMarks = $("#pucTotalMarks").val();
+let pucObtainedMarks = $("#pucObtainedMarks").val();
+let pucPercentage = $("#pucPercentage").val();
+
+
+
+
+// =====================================================
+// PUC VALIDATION
+// =====================================================
+
+if (isSSLCOnlyJob) {
+
+    // PUC is OPTIONAL.
+    // But if candidate enters any PUC information,
+    // then validate the complete PUC details.
+
+    let hasPUCData =
+        pucBoard !== "" ||
+        pucTotalMarks !== "" ||
+        pucObtainedMarks !== "";
+
+    if (hasPUCData) {
+
+        // -------------------------
+        // PUC Board
+        // -------------------------
+        if (pucBoard == "") {
+
+            $("#pucBoardError").html(
+                "<i class='fa fa-exclamation-triangle'></i> Please Provide Board for PUC"
+            );
+
+            error++;
+
+        } else {
+
+            $("#pucBoardError").html("");
+
+            if (pucBoard == "others") {
+
+                if ($("#others_puc").val() == "") {
+
+                    $("#pucBoardError").html(
+                        "<i class='fa fa-exclamation-triangle'></i> Please Provide Other Option"
+                    );
+
+                    error++;
+
+                } else {
+
+                    $("#pucBoardError").html("");
+                }
+            }
+        }
+
+
+        // -------------------------
+        // PUC Total Marks
+        // -------------------------
+        if (pucTotalMarks == "") {
+
+            $("#pucTotalMarksError").html(
+                "<i class='fa fa-exclamation-triangle'></i> Please Provide Total Marks for PUC"
+            );
+
+            error++;
+
+        } else {
+
+            $("#pucTotalMarksError").html("");
+        }
+
+
+        // -------------------------
+        // PUC Obtained Marks
+        // -------------------------
+        if (pucObtainedMarks == "") {
+
+            $("#pucObtainedMarksError").html(
+                "<i class='fa fa-exclamation-triangle'></i> Please Provide Obtained Marks for PUC"
+            );
+
+            error++;
+
+        } else {
+
+            $("#pucObtainedMarksError").html("");
+
+            // Percentage is already calculated
+            // by the input event above.
+
+            if (pucPercentage < 35) {
+
+                $("#pucObtainedMarksError").html(
+                    "<i class='fa fa-exclamation-triangle'></i> PUC % Must Be Above 35 Percentage"
+                );
+
+                error++;
+
+            } else {
+
+                $("#pucObtainedMarksError").html("");
+            }
+        }
+
+    } else {
+
+        // =================================================
+        // PUC NOT PROVIDED
+        // This is perfectly valid for these jobs.
+        // =================================================
+
+        $("#pucBoardError").html("");
+        $("#pucTotalMarksError").html("");
+        $("#pucObtainedMarksError").html("");
+        $("#pucPercentageError").html("");
+    }
+
+
+} else {
+
+    // =====================================================
+    // EXISTING JOBS
+    // PUC IS REQUIRED
+    // =====================================================
+
+    if (pucBoard == "") {
+
+        $("#pucBoardError").html(
+            "<i class='fa fa-exclamation-triangle'></i> Please Provide Board for PUC"
+        );
+
+        error++;
+
+    } else {
+
+        $("#pucBoardError").html("");
+
+        if (pucBoard == "others") {
+
+            if ($("#others_puc").val() == "") {
+
+                $("#pucBoardError").html(
+                    "<i class='fa fa-exclamation-triangle'></i> Please Provide Other Option"
+                );
+
+                error++;
+
+            } else {
+
+                $("#pucBoardError").html("");
+            }
+        }
+    }
+
+
+    if (pucTotalMarks == "") {
+
+        $("#pucTotalMarksError").html(
+            "<i class='fa fa-exclamation-triangle'></i> Please Provide Total Marks for PUC"
+        );
+
+        error++;
+
+    } else {
+
+        $("#pucTotalMarksError").html("");
+    }
+
+
+    if (pucObtainedMarks == "") {
+
+        $("#pucObtainedMarksError").html(
+            "<i class='fa fa-exclamation-triangle'></i> Please Provide Obtained Marks for PUC"
+        );
+
+        error++;
+
+    } else {
+
+        $("#pucObtainedMarksError").html("");
+
+        if (pucPercentage < 35) {
+
+            $("#pucObtainedMarksError").html(
+                "<i class='fa fa-exclamation-triangle'></i> PUC % Must Be Above 35 Percentage"
+            );
+
+            error++;
+
+        } else {
+
+            $("#pucObtainedMarksError").html("");
+        }
+    }
+}
+
+        let degreeName = $("#degreeName").val();
+let degreeTotalMarks = $("#degreeTotalMarks").val();
+let degreeObtainedMarks = $("#degreeObtainedMarks").val();
+let degreePercentage = $("#degreePercentage").val();
+
+
+
+
+// =====================================================
+// DEGREE VALIDATION
+// =====================================================
+
+if (isSSLCOnlyJob) {
+
+    // Degree is OPTIONAL for:
+    // Attender, Driver, Security, Night-Watchman
+
+    // Check whether candidate has entered ANY Degree data
+    let hasDegreeData =
+        degreeName !== "" ||
+        degreeTotalMarks !== "" ||
+        degreeObtainedMarks !== "";
+
+    if (hasDegreeData) {
+
+        // ==========================================
+        // Degree Name
+        // ==========================================
+        if (degreeName == "") {
+
+            $("#degreeNameError").html(
+                "<i class='fa fa-exclamation-triangle'></i> Please Select Degree"
+            );
+
+            error++;
+
+        } else {
+
+            $("#degreeNameError").html("");
+
+            if (degreeName == "others") {
+
+                if ($("#others_degree").val() == "") {
+
+                    $("#degreeNameError").html(
+                        "<i class='fa fa-exclamation-triangle'></i> Please Provide Other Option"
+                    );
+
+                    error++;
+
+                } else {
+
+                    $("#degreeNameError").html("");
+                }
+            }
+        }
+
+
+        // ==========================================
+        // Degree Total Marks
+        // ==========================================
+        if (degreeTotalMarks == "") {
+
+            $("#degreeTotalMarksError").html(
+                "<i class='fa fa-exclamation-triangle'></i> Please Provide Total Marks for Degree"
+            );
+
+            error++;
+
+        } else {
+
+            $("#degreeTotalMarksError").html("");
+        }
+
+
+        // ==========================================
+        // Degree Obtained Marks
+        // ==========================================
+        if (degreeObtainedMarks == "") {
+
+            $("#degreeObtainedMarksError").html(
+                "<i class='fa fa-exclamation-triangle'></i> Please Provide Obtained Marks for Degree"
+            );
+
+            error++;
+
+        } else {
+
+            $("#degreeObtainedMarksError").html("");
+
+            // Percentage is calculated by your
+            // existing Degree calculation code.
+            let degreePercentageValue =
+                parseFloat($("#degreePercentage").val());
+
+            if (category == "sc" ||
+                category == "st" ||
+                category == "cat-1") {
+
+                if (degreePercentageValue < 45) {
+
+                    $("#degreeObtainedMarksError").html(
+                        "<i class='fa fa-exclamation-triangle'></i> For SC/ST/CAT-1 Aspirants Minimum Degree Must Be Above 45 Percentage"
+                    );
+
+                    error++;
+
+                } else {
+
+                    $("#degreeObtainedMarksError").html("");
+                }
+
+            } else {
+
+                if (degreePercentageValue < 60) {
+
+                    $("#degreeObtainedMarksError").html(
+                        "<i class='fa fa-exclamation-triangle'></i> For Other Than SC/ST/CAT1 Aspirants Minimum Degree Must Be Above 60 Percentage"
+                    );
+
+                    error++;
+
+                } else {
+
+                    $("#degreeObtainedMarksError").html("");
+                }
+            }
+        }
+
+
+        // ==========================================
+        // Degree Percentage
+        // ==========================================
+        if (degreePercentage == "") {
+
+            $("#degreePercentageError").html(
+                "<i class='fa fa-exclamation-triangle'></i> Please Provide Percentage for Degree"
+            );
+
+            error++;
+
+        } else {
+
+            $("#degreePercentageError").html("");
+        }
+
+
+    } else {
+
+        // ==========================================
+        // Degree NOT PROVIDED
+        // This is valid because Degree is optional.
+        // ==========================================
+
+        $("#degreeNameError").html("");
+        $("#degreeTotalMarksError").html("");
+        $("#degreeObtainedMarksError").html("");
+        $("#degreePercentageError").html("");
+    }
+
+
+} else {
+
+    // =====================================================
+    // EXISTING JOBS
+    // DEGREE IS REQUIRED
+    // =====================================================
+
+    if (degreeName == "") {
+
+        $("#degreeNameError").html(
+            "<i class='fa fa-exclamation-triangle'></i> Please Select Degree"
+        );
+
+        error++;
+
+    } else {
+
+        $("#degreeNameError").html("");
+
+        if (degreeName == "others") {
+
+            if ($("#others_degree").val() == "") {
+
+                $("#degreeNameError").html(
+                    "<i class='fa fa-exclamation-triangle'></i> Please Provide Other Option"
+                );
+
+                error++;
+
+            } else {
+
+                $("#degreeNameError").html("");
+            }
+        }
+    }
+
+
+    if (degreeTotalMarks == "") {
+
+        $("#degreeTotalMarksError").html(
+            "<i class='fa fa-exclamation-triangle'></i> Please Provide Total Marks for Degree"
+        );
+
+        error++;
+
+    } else {
+
+        $("#degreeTotalMarksError").html("");
+    }
+
+
+    if (degreeObtainedMarks == "") {
+
+        $("#degreeObtainedMarksError").html(
+            "<i class='fa fa-exclamation-triangle'></i> Please Provide Obtained Marks for Degree"
+        );
+
+        error++;
+
+    } else {
+
+        $("#degreeObtainedMarksError").html("");
+
+        let degreePercentageValue =
+            parseFloat($("#degreePercentage").val());
+        let x_army = $(".x_army:checked").val();
+        console.log("x-army",x_army)
+        if (category == "sc" ||
+    category == "st" ||
+    category == "cat-1" || x_army=="yes") {
+
+            if (degreePercentageValue < 45) {
+
+                $("#degreeObtainedMarksError").html(
+                    "<i class='fa fa-exclamation-triangle'></i> For SC/ST/CAT-1 Aspirants Minimum Degree Must Be Above 45 Percentage"
+                );
+
+                error++;
+
+            } else {
+
+                $("#degreeObtainedMarksError").html("");
+            }
+
+        } else {
+
+            if (degreePercentageValue < 60) {
+
+                $("#degreeObtainedMarksError").html(
+                    "<i class='fa fa-exclamation-triangle'></i> For Other Than SC/ST/CAT1 Aspirants Minimum Degree Must Be Above 60 Percentage"
+                );
+
+                error++;
+
+            } else {
+
+                $("#degreeObtainedMarksError").html("");
+            }
+        }
+    }
+
+
+    if (degreePercentage == "") {
+
+        $("#degreePercentageError").html(
+            "<i class='fa fa-exclamation-triangle'></i> Please Provide Percentage for Degree"
+        );
+
+        error++;
+
+    } else {
+
+        $("#degreePercentageError").html("");
+    }
+}
+
+       let sslcMarksCard = $("#sslcMarksCard").val();
+let pucMarksCard = $("#pucMarksCard").val();
+let degreeMarksCard = $("#degreeMarksCard").val();
+
+
+
+
+// =====================================================
+// SSLC MARKS CARD - REQUIRED FOR ALL JOBS
+// =====================================================
+
+if (sslcMarksCard == "") {
+
+    $("#sslcMarksCardError").html(
+        "<i class='fa fa-exclamation-triangle'></i> Please Upload SSLC Marks Card"
+    );
+
+    error++;
+
+} else {
+
+    $("#sslcMarksCardError").html("");
+}
+
+
+// =====================================================
+// PUC MARKS CARD
+// =====================================================
+
+if (!isSSLCOnlyJob && pucMarksCard == "") {
+
+    $("#pucMarksCardError").html(
+        "<i class='fa fa-exclamation-triangle'></i> Please Upload PUC Marks Card"
+    );
+
+    error++;
+
+} else {
+
+    // Optional for SSLC-only jobs
+    $("#pucMarksCardError").html("");
+}
+
+
+// =====================================================
+// DEGREE MARKS CARD
+// =====================================================
+
+if (!isSSLCOnlyJob && degreeMarksCard == "") {
+
+    $("#degreeMarksCardError").html(
+        "<i class='fa fa-exclamation-triangle'></i> Please Upload Degree Marks Card"
+    );
+
+    error++;
+
+} else {
+
+    // Optional for SSLC-only jobs
+    $("#degreeMarksCardError").html("");
+}
+        //console.log(error);
+        if(error == 0) {
+        // Proceed to next step or submit the form
+        // window.location.replace("next_page_url");
+         $('#education-card').fadeOut(function() {
+              // Show the #education-card with animation
+               $("#languages-card").removeClass("hidden").fadeIn(500);
+           });
+          }
+    });
+    
+    /*************************Calculate Percentage**************************************/
+    function calculatePercentage(total, obtained) {
+        if (total > 0 && obtained >= 0) {
+            return ((obtained / total) * 100).toFixed(2);
+        }
+        return 0;
+    }
+    
+     $("#sslcTotalMarks, #sslcObtainedMarks").on("input", function () {
+        let total = parseFloat($("#sslcTotalMarks").val()) || 0;
+        let obtained = parseFloat($("#sslcObtainedMarks").val()) || 0;
+        
+        //console.log(obtained+"-"+total)
+        if(obtained<=total)
+        {
+            var percentage = calculatePercentage(total, obtained);
+            var cgpa = percentage/9.5;
+            console.log(cgpa)
+            if(cgpa>=10)
+            {
+                cgpa_new = 9.5;
+            }
+            else
+            {
+               cgpa_new =  cgpa;
+            }
+            //Math.round(percentage)
+        $("#sslcPercentage").val(percentage);
+        $("#sslcCGPA").val(cgpa_new.toFixed(2));
+        $("#sslcObtainedMarksError").html("");
+        
+            
+        
+        }
+        else
+        {
+            $("#sslcPercentage").val(0.00);
+            $("#sslcObtainedMarksError").html("<i class='fa fa-exclamation-triangle'></i> Optained Marks Should Less than Total");
+        }
+    });
+
+    $("#pucTotalMarks, #pucObtainedMarks").on("input", function () {
+        let total = parseFloat($("#pucTotalMarks").val()) || 0;
+        let obtained = parseFloat($("#pucObtainedMarks").val()) || 0;
+         if(obtained<=total)
+        {
+            let percentage = calculatePercentage(total, obtained);
+            let cgpa = percentage/9.5;
+            //console.log(cgpa)
+            if(cgpa>10)
+            {
+                cgpa_new = 9.5;
+            }
+            else
+            {
+               cgpa_new =  cgpa;
+            }
+            //Math.round(percentage)
+        $("#pucPercentage").val(percentage);
+        $("#pucCGPA").val(cgpa_new.toFixed(2));
+        }
+    });
+
+    $("#degreeTotalMarks, #degreeObtainedMarks").on("input", function () {
+        let total = parseFloat($("#degreeTotalMarks").val()) || 0;
+        let obtained = parseFloat($("#degreeObtainedMarks").val()) || 0;
+          if(obtained<=total)
+        {
+            let percentage = calculatePercentage(total, obtained);
+            let cgpa = percentage/9.5;
+            //console.log(cgpa)
+            if(cgpa>10)
+            {
+                cgpa_new = 9.5;
+            }
+            else
+            {
+               cgpa_new =  cgpa;
+            }
+            //Math.round(percentage)
+        $("#degreePercentage").val(percentage);
+        $("#degreeCGPA").val(cgpa_new.toFixed(2));
+        }
+        
+    });
+
+    
+       $(".prev-btn-lang").click(function(e){ 
+        let error = 0;
+        if(error == 0) {
+        // Proceed to next step or submit the form
+        // window.location.replace("next_page_url");
+         $('#languages-card').fadeOut(function() {
+              // Show the #education-card with animation
+               $("#education-card").removeClass("hidden").fadeIn(500);
+           });
+          }
+    });
+    
+    $(".next-btn-lang").click(function(e){ 
+        let error = 0;
+         
+
+        // Kannada validation
+       if (!$("#kannadaSpeak").is(':checked') && !$("#kannadaRead").is(':checked') && !$("#kannadaWrite").is(':checked')&& !$("#kannadaDT").is(':checked')) {
+            $("#kannadaError").html("<i class='fa fa-exclamation-triangle'></i> Please select at least one option for Kannada");
+            error++;
+        } else {
+            $("#kannadaError").html("");
+        }
+
+        // English validation
+        if (!$("#englishSpeak").is(':checked') && !$("#englishRead").is(':checked') && !$("#englishWrite").is(':checked')&& !$("#englishDT").is(':checked')) {
+            $("#englishError").html("<i class='fa fa-exclamation-triangle'></i> Please select at least one option for English");
+            error++;
+        } else {
+            $("#englishError").html("");
+        }
+
+        // Hindi validation
+        if (!$("#hindiSpeak").is(':checked') && !$("#hindiRead").is(':checked') && !$("#hindiWrite").is(':checked')&& !$("#hindiDT").is(':checked')) {
+            $("#hindiError").html("<i class='fa fa-exclamation-triangle'></i> Please select at least one option for Hindi");
+            error++;
+        } else {
+            $("#hindiError").html("");
+        }
+
+        if(error == 0) {
+        // Proceed to next step or submit the form
+        // window.location.replace("next_page_url");
+         $('#languages-card').fadeOut(function() {
+              // Show the #education-card with animation
+               $("#skills-card").removeClass("hidden").fadeIn(500);
+           });
+          }
+    });
+    
+     $(".prev-btn-skill").click(function(e){ 
+        let error = 0;
+        if(error == 0) {
+        // Proceed to next step or submit the form
+        // window.location.replace("next_page_url");
+         $('#skills-card').fadeOut(function() {
+              // Show the #education-card with animation
+               $("#languages-card").removeClass("hidden").fadeIn(500);
+           });
+          }
+    });
+    
+    $(".preview_btn").click(function(e){ 
+        let error = 0;
+        
+
+       // Experience Details validation
+let experienceDetails = $("#experienceDetails").val().trim();
+if (experienceDetails === "") {
+    $("#experienceDetailsError").html("<i class='fa fa-exclamation-triangle'></i> Please provide Experience Details");
+    error++;
+} else {
+    $("#experienceDetailsError").html("");
+    // Split the trimmed content by spaces to count words
+    let words = experienceDetails.split(/\s+/); // Split by whitespace
+    /*if (words.length < 2) {
+        $("#experienceDetailsError").html("<i class='fa fa-exclamation-triangle'></i> Please provide at least two words");
+        error++;
+    } else {
+        
+        $("#experienceDetailsError").html(""); // Clear error message
+         let valid = true;
+    
+    // Check each word for minimum length requirement
+    for (let i = 0; i < words.length; i++) {
+        if (words[i].length < 2) {
+            valid = false;
+            break;
+        }
+    }*/
+
+    /*if (!valid) {
+        $("#experienceDetailsError").html("<i class='fa fa-exclamation-triangle'></i> Each word should contain at least two characters");
+        error++;
+    } else {
+        $("#experienceDetailsError").html(""); // Clear error message
+    }
+
+    }*/
+}
+
+
+        // Computer Skills validation
+        /*let computerSkills = $("#computerSkills").val().trim();
+        if (computerSkills === "") {
+            $("#computerSkillsError").html("<i class='fa fa-exclamation-triangle'></i> Please list your computer skills.");
+            error++;
+        } else {
+            $("#computerSkillsError").html("");
+        }*/
+        
+         //console.log($("#experienceCertificate").val());
+       const noExperience = experienceDetails.toUpperCase() === "NA";
+       if(noExperience) {
+           $("#experienceCertificate").val("");
+           $("#experienceCertificateError").html("");
+       } else if($("#experienceCertificate").val()!="")
+       {//console.log("File is showing");
+        // File size validation for Experience Certificate
+        validateFileSize('experienceCertificate', 'experienceCertificateError','next-btn-skill');
+        
+        // File size validation for Skills Certificate
+        //validateFileSize('skillsCertificate', 'skillsCertificateError','next-btn-skill');
+       }
+       else
+       {
+           
+           if($("#job_name").val()=="General Manager" || $("#job_name").val()=="Manager" || $("#job_name").val()=="Senior Manager" || $("#job_name").val()=="Junior Manager")
+           {
+               $("#experienceCertificateError").html("<i class='fa fa-exclamation-triangle'></i> For "+$("#job_name").val()+", Experience Certificate Should be Upload");
+               error++;
+           }
+           else
+           {
+              $("#experienceCertificateError").html("");
+           }
+       }
+
+        if(error == 0) {
+        // Proceed to next step or submit the form
+        // window.location.replace("next_page_url");
+        
+         $('#skills-card').fadeOut(function() {
+              // Show the #education-card with animation
+               collectData();
+            displayPreview();
+               $("#preview-card").removeClass("hidden").fadeIn(500);
+           });
+          }
+    });
+    
+    /*$(".preview_btn").click(function(e){
+        //console.log("working");
+            collectData();
+            displayPreview();
+             $('#skills-card').fadeOut(function() {
+              // Show the #education-card with animation
+               $("#preview-card").removeClass("hidden").fadeIn(500);
+           });
+        //$("#previewModal").removeClass("hidden");
+    });*/
+    
+      $("#closePreview").click(function() {
+        $("#previewModal").addClass("hidden");
+    });
+
+    $("#confirmPreview").click(function() {
+        //$("#previewModal").addClass("hidden");
+        //console.log($("#declaration").is(":checked"))
+       
+    });
+    
+     $(".prev-btn-payment").click(function(e){ 
+        let error = 0;
+        if(error == 0) {
+        // Proceed to next step or submit the form
+        // window.location.replace("next_page_url");
+         $('#payment-card').fadeOut(function() {
+              // Show the #education-card with animation
+               $("#skills-card").removeClass("hidden").fadeIn(500);
+           });
+          }
+    });
+    
+           /*$("#dateOfBirth").change(function() {
+            let dob = new Date($(this).val());
+            let today = new Date($(this).data("agedate"));
+            //console.log($(this).val());
+
+            let ageYears = today.getFullYear() - dob.getFullYear();
+            let ageMonths = today.getMonth() - dob.getMonth();
+            let ageDays = today.getDate() - dob.getDate();
+
+            if (ageDays < 0) {
+                ageMonths--;
+                ageDays += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+            }
+            if (ageMonths < 0) {
+                ageYears--;
+                ageMonths += 12;
+            }
+
+            $("#ageDisplay").html(`Age : ${ageYears} Years ${ageMonths} Months ${ageDays} Days`);
+        });*/
+        
+        function calculateAge(dob, today) {
+
+    let age = today.getFullYear() - dob.getFullYear();
+    let monthDifference = today.getMonth() - dob.getMonth();
+    let dayDifference = today.getDate() - dob.getDate();
+
+    if (dayDifference < 0) {
+        monthDifference--;
+
+        dayDifference += new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            0
+        ).getDate();
+    }
+
+    if (monthDifference < 0) {
+        age--;
+
+        monthDifference += 12;
+    }
+
+    return {
+        ageYrs: age,
+        ageMonths: monthDifference,
+        ageDays: dayDifference
+    };
+}
+        
+function validateAge() {
+
+    let ageValid = true;
+    let errorMsg = "";
+
+    const category = $("#casteCategory").val();
+    const gender = $("#gender").val();
+    const widowStatus = $("input[name='widow']:checked").val();
+    const exArmyStatus = $("input[name='x_army']:checked").val();
+
+    const dobValue = $("#dateOfBirth").val();
+
+    if (!dobValue) {
+        $("#ageDisplay").html("");
+        $("#dateOfBirthError").html(
+            "<i class='fa fa-exclamation-triangle'></i> Please Provide Date of Birth"
+        );
+        $(".next-btn-basic").attr("disabled", true);
+        return false;
+    }
+
+    // Parse DOB safely
+    const dobParts = dobValue.split("-");
+
+    const dob = new Date(
+        parseInt(dobParts[0]),
+        parseInt(dobParts[1]) - 1,
+        parseInt(dobParts[2])
+    );
+
+    // Recruitment age reference date
+    const ageDateValue = $("#dateOfBirth").data("agedate");
+
+    let referenceDate;
+
+    if (ageDateValue) {
+
+        const ageDateParts = ageDateValue.split("-");
+
+        referenceDate = new Date(
+            parseInt(ageDateParts[0]),
+            parseInt(ageDateParts[1]) - 1,
+            parseInt(ageDateParts[2])
+        );
+
+    } else {
+
+        referenceDate = new Date();
+
+    }
+
+    // Future DOB validation
+    if (dob > referenceDate) {
+
+        $("#ageDisplay").html("");
+
+        $("#dateOfBirthError").html(
+            "<i class='fa fa-exclamation-triangle'></i> Date of Birth cannot be in the future"
+        );
+
+        $(".next-btn-basic").attr("disabled", true);
+
+        return false;
+    }
+
+    // Calculate age
+    const age = calculateAge(dob, referenceDate);
+
+    const ageInDays =
+        (age.ageYrs * 365) +
+        (age.ageMonths * 30) +
+        age.ageDays;
+
+    const minimumAge = 18 * 365;
+
+    const maxAgeGM = 35 * 365;
+    const maxAgeSCSTCAT1 = 40 * 365;
+    const maxAgeOtherCAT = 38 * 365;
+    const maxAgeGeneral = 45 * 365;
+
+    let maxAge = 0;
+
+    /*
+     * =====================================================
+     * X-ARMY RULE
+     * =====================================================
+     *
+     * X-Army candidates are allowed maximum age of 45 years
+     * irrespective of caste/category.
+     */
+    if (exArmyStatus === "yes") {
+
+        maxAge = maxAgeGeneral;
+
+        if (
+            ageInDays < minimumAge ||
+            ageInDays > maxAge
+        ) {
+
+            ageValid = false;
+
+            errorMsg =
+                "For X-Army candidates, age should be between 18-45 years.";
+
+        }
+
+    }
+
+    /*
+     * =====================================================
+     * NORMAL CATEGORY RULE
+     * =====================================================
+     */
+    else if (category === "GM") {
+
+        maxAge = maxAgeGM;
+
+        // Widow relaxation
+        if (
+            gender === "female" &&
+            widowStatus === "yes"
+        ) {
+            maxAge += 10 * 365;
+        }
+
+        if (
+            ageInDays < minimumAge ||
+            ageInDays > maxAge
+        ) {
+
+            ageValid = false;
+
+            errorMsg =
+                `For GM, age relaxation will be 18-${Math.floor(maxAge / 365)} years.`;
+        }
+
+    }
+
+    else if (
+        category === "sc" ||
+        category === "st" ||
+        category === "cat-1"
+    ) {
+
+        maxAge = maxAgeSCSTCAT1;
+
+        // Widow relaxation
+        if (
+            gender === "female" &&
+            widowStatus === "yes"
+        ) {
+            maxAge += 10 * 365;
+        }
+
+        if (
+            ageInDays < minimumAge ||
+            ageInDays > maxAge
+        ) {
+
+            ageValid = false;
+
+            errorMsg =
+                `For SC/ST/CAT-1, age relaxation will be 18-${Math.floor(maxAge / 365)} years.`;
+        }
+
+    }
+
+    else if (
+        [
+            "cat-2(A)",
+            "cat-2(B)",
+            "cat-3(A)",
+            "cat-3(B)"
+        ].includes(category)
+    ) {
+
+        maxAge = maxAgeOtherCAT;
+
+        // Widow relaxation
+        if (
+            gender === "female" &&
+            widowStatus === "yes"
+        ) {
+            maxAge += 10 * 365;
+        }
+
+        if (
+            ageInDays < minimumAge ||
+            ageInDays > maxAge
+        ) {
+
+            ageValid = false;
+
+            errorMsg =
+                `For CAT-2(A)/CAT-2(B)/CAT-3(A)/CAT-3(B), age relaxation will be 18-${Math.floor(maxAge / 365)} years.`;
+        }
+
+    }
+
+    // Display calculated age
+    $("#ageDisplay").html(
+        `Age : ${age.ageYrs} Years ${age.ageMonths} Months ${age.ageDays} Days`
+    );
+
+    // Final validation result
+    if (!ageValid) {
+
+        $("#dateOfBirthError").html(
+            "<i class='fa fa-exclamation-triangle'></i> " + errorMsg
+        );
+
+        $(".next-btn-basic").attr("disabled", true);
+
+        return false;
+
+    } else {
+
+        $("#dateOfBirthError").html("");
+
+        $(".next-btn-basic").attr("disabled", false);
+
+        return true;
+    }
+}
+
+$("#dateOfBirth").on("change", function () {
+
+    const dobValue = $(this).val();
+
+    if (!dobValue) {
+
+        $("#ageDisplay").html("");
+
+        $("#dateOfBirthError").html(
+            "<i class='fa fa-exclamation-triangle'></i> Please Provide Date of Birth"
+        );
+
+        return;
+    }
+
+    validateAge();
+
+});
+    
+     // Listen for changes in the category, widow, ex-army, and date of birth fields
+$("#casteCategory, input[name='widow'], input[name='x_army'], #dateOfBirth")
+    .change(function () {
+
+        const category = $("#casteCategory").val();
+const exArmyStatus = $("input[name='x_army']:checked").val();
+
+let examFee = 0;
+
+if (exArmyStatus === "yes") {
+
+    // X-Army candidates pay ₹600
+    // irrespective of caste category
+    examFee = 600;
+
+} else {
+
+    // Normal category-based fee
+    examFee = $("#casteCategory option:selected").data("amount") || 0;
+}
+
+$("#exam_fee").val(examFee);
+
+        if (
+            $("#casteCategory").val() === "sc" ||
+            $("#casteCategory").val() === "st" ||
+            $("#casteCategory").val() === "cat-1" ||
+            $("#casteCategory").val() === "cat-2(A)" ||
+            $("#casteCategory").val() === "cat-2(B)" ||
+            $("#casteCategory").val() === "cat-3(A)" ||
+            $("#casteCategory").val() === "cat-3(B)"
+        ) {
+
+            $("#caste_certificate").removeClass("hidden");
+
+        } else {
+
+            $("#caste_certificate")
+                .addClass("hidden")
+                .val("");
+
+        }
+
+        if ($("#dateOfBirth").val() !== "") {
+            validateAge();
+        }
+    });
+    
+let cropper;
+let currentTarget = ""; // To track whether it's photo or signature
+
+function openCropper(file, target) {
+  currentTarget = target;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const $img = $("#cropImage");
+
+    // Full reset before setting new image
+    $img.cropper?.("destroy"); // if already active
+    $img.attr("src", "").removeAttr("style").removeAttr("data-cropper");
+
+    $img.attr("src", e.target.result);
+    $("#cropModal").removeClass("hidden");
+
+    cropper = new Cropper($img[0], {
+     
+      viewMode: 1,
+      responsive: true,
+      autoCropArea: 1,
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+const sslcOnlyJobs = [
+    "Nayak/Attender",
+    "Peon",
+    "Driver",
+    "Night-Watchman"
+];
+
+function updateEducationRequiredFields() {
+
+    const jobName = $("#job_name").val();
+
+    if (sslcOnlyJobs.includes(jobName)) {
+
+        // PUC is NOT mandatory
+        $(".puc_row .required-star").hide();
+
+        // Degree is NOT mandatory
+        $(".degree_row .required-star").hide();
+
+        // SSLC remains mandatory
+        $(".sslc_row .required-star").show();
+
+    } else {
+
+        // Normal posts
+        $(".puc_row .required-star").show();
+        $(".degree_row .required-star").show();
+
+        $(".sslc_row .required-star").show();
+    }
+}
+
+updateEducationRequiredFields();
+
+$("#job_name").on("change", function () {
+    updateEducationRequiredFields();
+});
+
+
+$("#candidatePhoto, #candidateSign").change(function () {
+  let file = this.files[0];
+  const id = $(this).attr("id");
+  const errorBox = $("#" + id + "Error");
+  const preview = $("#" + id + "Preview");
+  const MAX_SIZE = 512 * 1024;
+
+  errorBox.html("");
+  preview.attr("src", "").addClass("hidden");
+
+  if (!file) {
+    errorBox.html("Please select an image.");
+    return;
+  } else if (!file.type.match("image.*")) {
+    errorBox.html("Invalid file type.");
+    return;
+  } else if (file.size > MAX_SIZE) {
+    errorBox.html("File should be < 512KB");
+    return;
+  } else {
+    openCropper(file, id); // Open crop modal
+  }
+});
+
+// Confirm Crop
+$("#cropConfirm").click(function () {
+  cropper.getCroppedCanvas().toBlob(function (blob) {
+    const previewId = currentTarget + "Preview";
+    const errorId = currentTarget + "Error";
+
+    // Show preview
+    const url = URL.createObjectURL(blob);
+    $("#" + previewId).attr("src", url).removeClass("hidden");
+    $("#" + errorId).html("");
+
+    // Hide modal
+    $("#cropModal").addClass("hidden");
+
+    // OPTIONAL: Replace input file with cropped blob (if you use FormData)
+    let fileInput = document.getElementById(currentTarget);
+    let dataTransfer = new DataTransfer();
+    dataTransfer.items.add(new File([blob], "cropped.png", { type: "image/png" }));
+    fileInput.files = dataTransfer.files;
+
+    // Destroy cropper
+    cropper.destroy();
+  }, "image/png");
+});
+
+// Cancel Crop
+$("#cropCancel").click(function () {
+  $("#cropModal").addClass("hidden");
+
+  // Reset image src and remove styles
+  $("#cropImage")
+    .attr("src", "")
+    .removeAttr("style")     // Remove inline width/height
+    .removeAttr("data-cropper"); // Important if cropper data persists
+
+  // Destroy cropper if exists
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
+
+  // Optional: Reset aspect ratio or other flags if used
+  currentTarget = "";
+});
+
+
+  function validateFileSize(fileInputId, errorMsgId,btn_class) {
+      
+        const fileInput = document.getElementById(fileInputId);
+        const errorMsg = document.getElementById(errorMsgId);
+        
+       fileInput.addEventListener('change', function () {
+        const file = this.files[0];
+        const validFileTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
+
+        if (file) {
+            if (file.size > 512 * 1024) { // 512KB
+                errorMsg.textContent = "File size should be less than 512KB.";
+                this.value = '';
+                $("."+btn_class).attr("disabled",true);
+            } else if (!validFileTypes.includes(file.type)) {
+                errorMsg.textContent = "Only image and PDF files are allowed.";
+                this.value = '';
+                $("."+btn_class).attr("disabled",true);
+            } else {
+                errorMsg.textContent = '';
+                $("."+btn_class).attr("disabled",false);
+                
+                if(file.type=="image/jpeg" || file.type=="image/png" || file.type=="image/gif")
+                {
+                     let reader = new FileReader();
+                     reader.onload = function(e) {
+                         if(fileInputId=="sslcMarksCard")
+                         {
+                            $("#SSLCPreview").attr("src", e.target.result).removeClass("hidden");
+                         }
+                         
+                         if(fileInputId=="pucMarksCard")
+                         {
+                            $("#PUCPreview").attr("src", e.target.result).removeClass("hidden");
+                         }
+                         
+                         if(fileInputId=="degreeMarksCard")
+                         {
+                            $("#DegreePreview").attr("src", e.target.result).removeClass("hidden");
+                         }
+                        }
+                        reader.readAsDataURL(file);
+                }
+                else
+                {
+                    $("#SSLCPreview").addClass("hidden");  
+                    $("#PUCPreview").addClass("hidden");
+                    $("#DegreePreview").addClass("hidden");
+                }
+                
+              
+            }
+        }
+    });
+    }
+
+    validateFileSize('sslcMarksCard', 'sslcMarksCardError','next-btn-edu');
+    validateFileSize('pucMarksCard', 'pucMarksCardError','next-btn-edu');
+    validateFileSize('degreeMarksCard', 'degreeMarksCardError','next-btn-edu');
+    //validateFileSize('experienceCertificate', 'experienceCertificateError');
+    //validateFileSize('skillsCertificate', 'skillsCertificateError');
+    
+       let formData = {};
+
+    function collectData() {
+        let dateValue = $("#dateOfBirth").val();
+
+// Create a new Date object from the input value
+let dateObj = new Date(dateValue);
+console.log($("input[name='widow']:checked").val()+"/"+$("input[name='x_army']:checked").val());
+// Format the date to day-month-year
+let formattedDate = ("0" + dateObj.getDate()).slice(-2) + "-" +
+                    ("0" + (dateObj.getMonth() + 1)).slice(-2) + "-" +
+                    dateObj.getFullYear();
+
+     formData = {
+    candidateFName: $("#candidateFName").val(),
+    candidateLName: $("#candidateLName").val(),
+    parentName: $("#parentName").val(),
+    candidateMobile: $("#candidateMobile").val(),
+    candidateEmail: $("#candidateEmailID").val(),
+    candidateDOB: formattedDate,
+    x_army: $("input[name='x_army']:checked").val(),
+    widow: $("input[name='widow']:checked").val(),
+    gender: $("#gender option:selected").val(),
+    casteCategory: $("#casteCategory").val(),
+
+    // ===== Postal Address =====
+    postalState: $("#postalState option:selected").text(),
+    postalDistrict: $("#postalDistrict option:selected").text(),
+    postalTaluk: $("#postalTaluk option:selected").text(),
+    postalPincode: $("#postalPincode").val(),
+    postalAddress: $("#postalAddress").val(),
+
+    // ===== Permanent Address =====
+    permanentState: $("#permanentState option:selected").text(),
+    permanentDistrict: $("#permanentDistrict option:selected").text(),
+    permanentTaluk: $("#permanentTaluk option:selected").text(),
+    permanentPincode: $("#permanentPincode").val(),
+    permanentAddress: $("#permanentAddress").val(),
+
+    casteReligion: $("#casteReligion").val(),
+    nationality: $("#nationality").val(),
+    aadharNumber: $("#aadharNumber").val(),
+    candidatePhoto: $("#candidatePhoto").val(),
+    candidateSign: $("#candidateSign").val(),
+    sslcBoard: $("#sslcBoard").val(),
+    sslcTotalMarks: $("#sslcTotalMarks").val(),
+    sslcObtainedMarks: $("#sslcObtainedMarks").val(),
+    sslcPercentage: $("#sslcPercentage").val(),
+    sslcCGPA: $("#sslcCGPA").val(),
+    pucBoard: $("#pucBoard").val(),
+    pucTotalMarks: $("#pucTotalMarks").val(),
+    pucObtainedMarks: $("#pucObtainedMarks").val(),
+    pucPercentage: $("#pucPercentage").val(),
+    pucCGPA: $("#pucCGPA").val(),
+    degreeName: $("#degreeName").val(),
+    degreeTotalMarks: $("#degreeTotalMarks").val(),
+    degreeObtainedMarks: $("#degreeObtainedMarks").val(),
+    degreePercentage: $("#degreePercentage").val(),
+    degreeCGPA: $("#degreeCGPA").val(),
+    sslcMarksCard: $("#sslcMarksCard").val(),
+    pucMarksCard: $("#pucMarksCard").val(),
+    degreeMarksCard: $("#degreeMarksCard").val(),
+    experienceDetails: $("#experienceDetails").val(),
+    computerSkills: $("#computerSkills").val(),
+    skillsCertificate: $("#skillsCertificate").val(),
+
+    languages: {
+        kannada: {
+            speak: $("#kannadaSpeak").is(":checked"),
+            read: $("#kannadaRead").is(":checked"),
+            write: $("#kannadaWrite").is(":checked"),
+            DT: $("#kannadaDT").is(":checked")
+        },
+        english: {
+            speak: $("#englishSpeak").is(":checked"),
+            read: $("#englishRead").is(":checked"),
+            write: $("#englishWrite").is(":checked"),
+            DT: $("#englishDT").is(":checked")
+        },
+        hindi: {
+            speak: $("#hindiSpeak").is(":checked"),
+            read: $("#hindiRead").is(":checked"),
+            write: $("#hindiWrite").is(":checked"),
+            DT: $("#hindiDT").is(":checked")
+        }
+    }
+};
+
+}
+
+    function displayPreview() {
+   let previewContent = `
+  <h4 class="text-xl font-semibold mb-4">Preview Your Details</h4>
+  <div class="space-y-6 text-sm">
+
+    <!-- Personal Info -->
+    <div class="bg-white rounded-lg shadow p-4">
+      <h2 class="text-lg font-semibold border-b pb-2 mb-4">Personal Information</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div><span class="font-medium">Name:</span> ${formData.candidateFName} ${formData.candidateLName}</div>
+        <div><span class="font-medium">Parent Name:</span> ${formData.parentName}</div>
+        <div><span class="font-medium">Mobile:</span> ${formData.candidateMobile}</div>
+        <div><span class="font-medium">Email:</span> ${formData.candidateEmail}</div>
+        <div><span class="font-medium">DOB:</span> ${formData.candidateDOB}</div>
+        <div><span class="font-medium">Gender:</span> ${formData.gender}</div>
+        <div><span class="font-medium">Category:</span> ${formData.casteCategory}</div>
+        <div><span class="font-medium">Religion/Caste:</span> ${formData.casteReligion}</div>
+        <div><span class="font-medium">Nationality:</span> ${formData.nationality}</div>
+        <div>
+    <span class="font-medium">X-Army:</span>
+    ${formData.x_army || 'No'}
+</div>
+        <div><span class="font-medium">Aadhar No.:</span> ${formData.aadharNumber}</div>
+        <div class="sm:col-span-2">
+    <span class="font-medium">Postal Address:</span>
+
+    <div class="ml-4 mt-1">
+
+        <div><strong>State:</strong> ${$("#postalState option:selected").text()}</div>
+
+        <div><strong>District:</strong> ${$("#postalDistrict option:selected").text()}</div>
+
+        <div><strong>Taluk:</strong> ${$("#postalTaluk option:selected").text()}</div>
+
+        <div><strong>PIN Code:</strong> ${formData.postalPincode}</div>
+
+        <div class="mt-1">
+            <strong>Address:</strong><br>
+            ${(formData.postalAddress || "").replace(/\n/g, "<br>")}
+        </div>
+
+    </div>
+</div>
+
+<div class="sm:col-span-2">
+    <span class="font-medium">Permanent Address:</span>
+
+    <div class="ml-4 mt-1">
+
+        <div><strong>State:</strong> ${$("#permanentState option:selected").text()}</div>
+
+        <div><strong>District:</strong> ${$("#permanentDistrict option:selected").text()}</div>
+
+        <div><strong>Taluk:</strong> ${$("#permanentTaluk option:selected").text()}</div>
+
+        <div><strong>PIN Code:</strong> ${formData.permanentPincode}</div>
+
+        <div class="mt-1">
+            <strong>Address:</strong><br>
+            ${(formData.permanentAddress || "").replace(/\n/g, "<br>")}
+        </div>
+
+    </div>
+</div>
+        
+        <div><span class="font-medium">Widow:</span> ${formData.widow}</div>
+      </div>
+      <div class="flex gap-10 mt-6">
+        <div id="photoPreview" class="text-center">
+          <p class="font-medium mb-1">Photo</p>
+        </div>
+        <div id="signPreview" class="text-center">
+          <p class="font-medium mb-1">Signature</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Education -->
+    <div class="bg-white rounded-lg shadow p-4">
+      <h2 class="text-lg font-semibold border-b pb-2 mb-4">Educational Information</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div><span class="font-medium">SSLC Board:</span> ${formData.sslcBoard}</div>
+        <div><span class="font-medium">SSLC Marks:</span> ${formData.sslcObtainedMarks} / ${formData.sslcTotalMarks}</div>
+        <div><span class="font-medium">SSLC Percentage:</span> ${formData.sslcPercentage}</div>
+
+          ${formData.pucBoard ? `
+      <div><span class="font-medium">PUC Board:</span> ${formData.pucBoard}</div>
+      <div><span class="font-medium">PUC Marks:</span> ${formData.pucObtainedMarks} / ${formData.pucTotalMarks}</div>
+      <div><span class="font-medium">PUC Percentage:</span> ${formData.pucPercentage}</div>
+    ` : ''}
+
+    ${formData.degreeName ? `
+      <div><span class="font-medium">Degree Name:</span> ${formData.degreeName}</div>
+      <div><span class="font-medium">Degree Marks:</span> ${formData.degreeObtainedMarks} / ${formData.degreeTotalMarks}</div>
+      <div><span class="font-medium">Degree Percentage:</span> ${formData.degreePercentage}</div>
+    ` : ''}
+      </div>
+    </div>
+
+    <!-- Experience -->
+    <div class="bg-white rounded-lg shadow p-4">
+      <h2 class="text-lg font-semibold border-b pb-2 mb-4">Experience</h2>
+      <div><span class="font-medium">Experience Details:</span> ${formData.experienceDetails}</div>
+    </div>
+
+ <!-- Languages -->
+<div class="bg-white rounded-lg shadow p-4">
+  <h2 class="text-lg font-semibold border-b pb-2 mb-4">Languages Known</h2>
+  <div class="space-y-2">
+
+    ${formData.languages?.kannada ? `
+      <div>
+        <span class="font-medium">Kannada:</span>
+        Speak: ${formData.languages.kannada.speak ? 'Yes' : 'No'}, 
+        Read: ${formData.languages.kannada.read ? 'Yes' : 'No'}, 
+        Write: ${formData.languages.kannada.write ? 'Yes' : 'No'}
+      </div>
+    ` : ''}
+
+    ${formData.languages?.english ? `
+      <div>
+        <span class="font-medium">English:</span>
+        Speak: ${formData.languages.english.speak ? 'Yes' : 'No'}, 
+        Read: ${formData.languages.english.read ? 'Yes' : 'No'}, 
+        Write: ${formData.languages.english.write ? 'Yes' : 'No'}
+      </div>
+    ` : ''}
+
+    ${formData.languages?.hindi ? `
+      <div>
+        <span class="font-medium">Hindi:</span>
+        Speak: ${formData.languages.hindi.speak ? 'Yes' : 'No'}, 
+        Read: ${formData.languages.hindi.read ? 'Yes' : 'No'}, 
+        Write: ${formData.languages.hindi.write ? 'Yes' : 'No'}
+      </div>
+    ` : ''}
+
+  </div>
+</div>
+
+
+    <!-- Declaration -->
+    <div class="bg-white rounded-lg shadow p-4">
+      <label class="flex items-start gap-2">
+        <input type="checkbox" id="declaration" name="declaration" class="mt-1">
+        <span>
+          I, hereby declare that the information provided in this form is true and correct to the best of my knowledge and belief. I understand that any false information or misrepresentation may lead to disqualification or legal action taken by the bank.
+        </span>
+      </label>
+      <span class="text-red-500 text-sm" id="declarationError"></span>
+    </div>
+  </div>
+`;
+
+
+    $("#previewContent").html(previewContent);
+
+    // Load photo and signature preview
+    formData.candidatePhotoFile = document.getElementById('candidatePhoto').files[0];
+    formData.candidateSignFile = document.getElementById('candidateSign').files[0];
+
+    const photoFile = formData.candidatePhotoFile;
+    const signFile = formData.candidateSignFile;
+
+    if (photoFile) {
+        const photoReader = new FileReader();
+        photoReader.onload = function (e) {
+            const photoImg = document.createElement('img');
+            photoImg.src = e.target.result;
+            photoImg.alt = "Candidate Photo";
+            photoImg.className = "h-24 w-24 object-cover rounded";
+            document.getElementById("photoPreview").appendChild(photoImg);
+        };
+        photoReader.readAsDataURL(photoFile);
+    }
+
+    if (signFile) {
+        const signReader = new FileReader();
+        signReader.onload = function (e) {
+            const signImg = document.createElement('img');
+            signImg.src = e.target.result;
+            signImg.alt = "Candidate Signature";
+            signImg.className = "h-12 w-24 object-contain";
+            document.getElementById("signPreview").appendChild(signImg);
+        };
+        signReader.readAsDataURL(signFile);
+    }
+} 
+
+
+
+
+
+
+ $('#sslcBoard').change(function() {
+     
+        if ($(this).val() == 'others') {
+            $('#others').removeClass('hidden');
+        } else {
+            $('#others').addClass('hidden');
+        }
+    });
+    
+     $('#pucBoard').change(function() {
+     //console.log($(this).val());
+        if ($(this).val() == 'others') {
+            $('#others_puc').removeClass('hidden');
+        } else {
+            $('#others_puc').addClass('hidden');
+        }
+    });
+    
+     $('#degreeName').change(function() {
+     //console.log($(this).val());
+        if ($(this).val() == 'others') {
+            $('#others_degree').removeClass('hidden');
+        } else {
+            $('#others_degree').addClass('hidden');
+        }
+    });
+    
+       $(".prev-btn-preview").click(function(e){ 
+        let error = 0;
+        if(error == 0) {
+        // Proceed to next step or submit the form
+        // window.location.replace("next_page_url");
+         $('#preview-card').fadeOut(function() {
+              // Show the #education-card with animation
+               $("#skills-card").removeClass("hidden").fadeIn(500);
+           });
+          }
+    });
+    
+      $(".next-btn-preview").click(function(e){
+          //e.preventDefault();
+          console.log($("#declaration").is(":checked"));
+          console.log($("#exam_fee").val())
+          if($("#declaration").is(":checked")!=true)
+          {
+            $("#declarationError").html("<i class='fa fa-exclamation-triangle'></i> Please Accept Declaration")  
+          }
+          else
+          {
+              // Sample payment URL for Google Pay or PhonePe
+    // Replace with actual URL in format like 'upi://pay?pa=YOUR_UPI_ID&pn=YOUR_NAME&am=FIXED_AMOUNT&cu=INR'
+    var upiId = 'SHRISHIDDESHWARBANK123@idbi';
+    var name = 'Bank';
+    var amount = $("#exam_fee").val(); // Fixed amount
+    var currency = 'INR';
+     console.log($("#exam_fee").val())
+    // Construct the UPI URL
+    var paymentUrl = `upi://pay?pa=${upiId}&pn=${name}&am=${amount}&cu=${currency}`;
+     generateQRCode(paymentUrl);
+        
+            $("#declarationError").html("");  
+            
+             $('#preview-card').fadeOut(function() {
+              // Show the #education-card with animation
+              $(".amount_display").html('<i class="fa fa-inr"></i> '+$("#exam_fee").val()+" /-");
+               $("#payment-card").removeClass("hidden").fadeIn(500);
+           });
+          }
+        
+      });
+       // Function to generate QR code
+            function generateQRCode(paymentUrl) {
+                $('#qrcode').empty(); // Clear any existing QR code
+                new QRCode(document.getElementById("qrcode"), paymentUrl);
+            }
+            
+      /*****************************UTR No. Check**************************************/
+       $("#utrNumber").blur(function(e){
+          e.preventDefault();
+        let utr = $(this).val();
+        let error=0;
+        if(utr!="" && utr.length==12)
+        {
+            $(".next-btn-payment").attr("disabled",true);
+             $.ajax({
+
+          url:$(this).data("url"),
+          dataType : "JSON",
+          data: {utr_num:utr},
+          type: "post",
+          success: function(response)
+          {
+            // alert(data);
+             $(".loader").removeClass("d-block");
+             $(".loader").addClass("d-none");
+             //console.log(response)
+             if(response.code==0)
+             {
+               $("#utrNumberError").html("<i class='fa fa-exclamation-triangle'></i>The UTR Number(UPI Transaction No.) Already Registered");  
+               $(".next-btn-payment").attr("disabled",true);
+             }
+             else
+             {
+                 $("#utrNumberError").html("");
+                 $(".next-btn-payment").attr("disabled",false);
+             }
+             //$(".next-btn-payment").attr("disabled",true);
+          },
+          error:function( jqXHR,textStatus,errorThrown){
+            alert(errorThrown);
+            $(".btn_submit").attr('disabled',false);
+          }
+
+
+        })
+        }
+        else
+        {
+          $("#utrNumberError").html("<i class='fa fa-exclamation-triangle'></i> Invalid UTR Number");
+        }
+        
+       
+        
+      });
+      /***************Submitting Application********************************************/
+      $("#job_form").submit(function(e){
+          e.preventDefault();
+             var formData = new FormData($('#job_form')[0]);
+        for (let pair of formData.entries()) {
+    console.log(pair[0], pair[1]);
+}
+        let utr = $("#utrNumber").val();
+        let error=0;
+        if(utr=="")
+        {
+            $("#utrNumberError").html("<i class='fa fa-exclamation-triangle'></i> Enter The UTR Number(UPI Transaction No.)");
+            error++;
+        }
+        else
+        {
+           $("#utrNumberError").html(""); 
+            if(utr.length!=12)
+           {
+              $("#utrNumberError").html("<i class='fa fa-exclamation-triangle'></i> Invalid UTR Number");
+              error++;
+           }
+           else
+          {
+           $("#utrNumberError").html(""); 
+           }
+        }
+        
+     
+        
+        if(error==0)
+        {
+            //console.log("sucessfully saved")
+            var formData = new FormData($('#job_form')[0]);
+            
+            $(".next-btn-payment").attr("disabled",true);
+            $(".loading").removeClass("hidden");
+        $.ajax({
+
+          url:$(this).attr("action"),
+          dataType : "Json",
+          data: formData,
+          processData: false,  // Don't process the data (already in FormData)
+          contentType: false,
+          type: "post",
+          success: function(response)
+          {
+            // alert(data);
+             console.log(response)
+             $(".loading").addClass("hidden");
+             /* $.toast({
+    heading: 'Success',
+    text: response.msg,
+    showHideTransition: 'slide',
+    position:'top-right',
+    icon: 'success'
+})*/    
+             if (response.code == 1) {
+    Swal.fire({
+        title: 'Success',
+        text: response.msg,
+        icon: 'success',
+        confirmButtonText: 'OK'
+    }).then(() => {
+        /*if (response.redirect_url) {
+            window.location.href = response.redirect_url;
+        }*/
+    });
+} else {
+    Swal.fire({
+        title: 'Error',
+        text: response.msg || 'Something went wrong. Please try again.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+    });
+}
+
+
+            $('#payment-card').fadeOut(function() {
+              // Show the #education-card with animation
+               $("#ack-card").removeClass("hidden").fadeIn(500);
+               $(".msg_display").html(response.msg);
+               $(".download_ack").data("ack_num",response.appln_num);
+               $(".close_appln").data("redirect_url",response.redirect_url)
+           });
+                      
+        
+        
+          },
+          error:function( jqXHR,textStatus,errorThrown){
+            alert(errorThrown);
+            $(".next-btn-payment").attr("disabled",false);
+          }
+
+
+        })
+        }
+        
+      });
+      
+    $(".download_ack").click(function(e){
+        e.preventDefault();
+        window.open($(this).attr("href")+btoa(unescape(encodeURIComponent($(this).data("ack_num")))),"_blank");
+    }); 
+    
+    $(".close_appln").click(function(e){
+        e.preventDefault();
+        window.open($(this).data("redirect_url"));
+    }); 
+    
+    $('#kannadaDT').change(function() {
+        if ($(this).is(':checked')) {
+            $('#kannadaSpeak').prop('checked', false).prop('disabled', true);
+            $('#kannadaRead').prop('checked', false).prop('disabled', true);
+            $('#kannadaWrite').prop('checked', false).prop('disabled', true);
+        } else {
+            $('#kannadaSpeak').prop('disabled', false);
+            $('#kannadaRead').prop('disabled', false);
+            $('#kannadaWrite').prop('disabled', false);
+        }
+    });
+    
+    $('#englishDT').change(function() {
+    if ($(this).is(':checked')) {
+        $('#englishSpeak').prop('checked', false).prop('disabled', true);
+        $('#englishRead').prop('checked', false).prop('disabled', true);
+        $('#englishWrite').prop('checked', false).prop('disabled', true);
+    } else {
+        $('#englishSpeak').prop('disabled', false);
+        $('#englishRead').prop('disabled', false);
+        $('#englishWrite').prop('disabled', false);
+    }
+});
+
+$('#hindiDT').change(function() {
+    if ($(this).is(':checked')) {
+        $('#hindiSpeak').prop('checked', false).prop('disabled', true);
+        $('#hindiRead').prop('checked', false).prop('disabled', true);
+        $('#hindiWrite').prop('checked', false).prop('disabled', true);
+    } else {
+        $('#hindiSpeak').prop('disabled', false);
+        $('#hindiRead').prop('disabled', false);
+        $('#hindiWrite').prop('disabled', false);
+    }
+});
+
+$("#driving_licence").change(function(e){
+    //validateFileSize('driving_licence', 'driving_licence_Error','next-btn-basic');
+    
+    const file = this.files[0];
+    const validFileTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
+    //console.log(validFileTypes.includes(file.type))
+     if (file.size > 512 * 1024) { // 512KB
+                
+                $("#driving_licence_Error").html("File size should be less than 512KB.");
+                this.value = '';
+                $(".basic_info").addClass("hidden");
+                $(".next-btn-basic").attr("disabled",true);
+            } else if (!validFileTypes.includes(file.type)) {
+                
+                 $("#driving_licence_Error").html("Only image and PDF files are allowed.");
+                this.value = '';
+                $(".basic_info").addClass("hidden");
+                $(".next-btn-basic").attr("disabled",true);
+            } else {
+                $("#driving_licence_Error").html("");
+                $(".next-btn-basic").attr("disabled",false);
+                $(".basic_info").removeClass("hidden");
+            }
+});
+
+  
+   $("#gender").change(function(e){
+       
+        if($(this).val()=="female")
+        {
+            //$(".widow").attr("disabled",false);
+            $(".widow_area").removeClass("hidden");
+        }
+        else
+        {
+           //$(".widow").attr("disabled",true);
+           $(".widow_area").addClass("hidden");
+        }
+    });
+    
+});
