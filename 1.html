@@ -867,7 +867,7 @@
  <header class="bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white p-4 flex flex-col items-center text-center">
     <img src="./1_files/Logo.png" alt="Logo" width="100" height="100" class="mb-2">
     <h1 class="text-xl font-bold uppercase">
-      Shri Shiddeshwar Co-Op Bank Ltd, Vijayapur
+      Vijay Co-op Bank, Vijayapur
     </h1>
   </header>
 
@@ -887,7 +887,7 @@
     <!-- Pre-Basic Card -->
     <div id="pre-basic-card" class="bg-white shadow-md rounded px-4 py-6 mb-4">
       <div class="mb-4 text-center">
-        <h3 class="text-lg font-semibold">JOB APPLIED: Junior Manager</h3>
+        <h3 class="text-lg font-semibold" id="jobAppliedTitle">JOB APPLIED: Junior Manager</h3>
         <hr class="my-2">
         <input type="hidden" id="job_code" name="job_code" value="JB0001">
         <input type="hidden" id="job_name" name="job_name" value="Junior Manager">
@@ -1535,8 +1535,8 @@
       <img id="cropImage" class="max-h-[400px] mx-auto">
     </div>
     <div class="flex justify-end gap-2 mt-4">
-      <button id="cropCancel" class="px-4 py-2 text-sm bg-gray-300 rounded">Cancel</button>
-      <button id="cropConfirm" class="px-4 py-2 text-sm bg-blue-600 text-white rounded">Crop &amp; Use</button>
+      <button type="button" id="cropCancel" class="px-4 py-2 text-sm bg-gray-300 rounded">Cancel</button>
+      <button type="button" id="cropConfirm" class="px-4 py-2 text-sm bg-blue-600 text-white rounded">Crop &amp; Use</button>
     </div>
   </div>
 </div>
@@ -2032,7 +2032,7 @@
     
     <!-- ✅ Footer -->
   <footer class="bg-gray-800 text-white text-center p-4 mt-10">
-    © Shri Shiddeshwar Co-Op Bank Ltd, Vijayapur, All rights reserved.&nbsp;&nbsp;&nbsp;<span>Bank Enquiry(For more information): +91-8867757807</span>&nbsp;&nbsp;&nbsp;||&nbsp;&nbsp;&nbsp;<span>For Technical Assistance : +91-7019671788</span>
+    © Vijay Co-op Bank, Vijayapur, All rights reserved.&nbsp;&nbsp;&nbsp;<span>Bank Enquiry(For more information): +91-8867757807</span>&nbsp;&nbsp;&nbsp;||&nbsp;&nbsp;&nbsp;<span>For Technical Assistance : +91-7019671788</span>
   </footer>
 
     <script src="./1_files/jquery-3.7.1.min.js.download" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -2052,4 +2052,36 @@ const BASE_URL = "https://ssbankvijaypur.com/public/assets/json";
 
 
 
-<script>document.querySelector('form')?.addEventListener('submit',e=>{e.preventDefault();location.href='2.html'})</script></body></html>
+<script>
+(() => {
+  const districts = ['Bagalkote','Ballari','Belagavi','Bengaluru Rural','Bengaluru Urban','Bidar','Dharwad','Gadag','Hassan','Haveri','Kalaburagi','Koppal','Raichur','Shivamogga','Tumakuru','Udupi','Uttara Kannada','Vijayapura','Yadgir'];
+  const fill = (id, values, label) => { const el=document.getElementById(id); if(!el) return; const old=el.value; el.innerHTML='<option value="">Select '+label+'</option>'+values.map(v=>`<option value="${v}">${v}</option>`).join(''); if(values.includes(old)) el.value=old; el.disabled=false; };
+  const talukMap = {
+    'Vijayapura': ['Almel','Babaleshwar','Basavana Bagevadi','Chadchan','Devara Hipparagi','Indi','Kolhar','Muddebihal','Nidagundi','Sindgi','Talikoti','Tikota','Vijayapura']
+  };
+  const fillTalukFallback = prefix => {
+    const district = document.getElementById(prefix+'District')?.value;
+    const taluks = talukMap[district] || ['Select a district first'];
+    const el = document.getElementById(prefix+'Taluk');
+    if (el && el.options.length <= 1) fill(prefix+'Taluk', taluks, 'Taluk');
+  };
+  ['postalState','permanentState'].forEach(stateId => document.getElementById(stateId)?.addEventListener('change', () => {
+    const prefix=stateId.startsWith('postal')?'postal':'permanent';
+    // address.js may finish its remote request after this event; apply the local fallback last.
+    setTimeout(() => { fill(prefix+'District', districts, 'District'); fillTalukFallback(prefix); }, 50);
+    setTimeout(() => { if ((document.getElementById(prefix+'District')?.options.length || 0) <= 1) fill(prefix+'District', districts, 'District'); }, 500);
+  }));
+  ['postalDistrict','permanentDistrict'].forEach(id => document.getElementById(id)?.addEventListener('change', () => {
+    const prefix=id.startsWith('postal')?'postal':'permanent';
+    setTimeout(() => fillTalukFallback(prefix), 50);
+  }));
+  document.querySelector('form')?.addEventListener('submit',e=>{e.preventDefault();location.href='2.html'});
+  const nextBasic = document.querySelector('.next-btn-basic');
+  nextBasic?.addEventListener('click', event => {
+    const required = ['candidateFName','parentName','gender','casteCategory','dateOfBirth','postalState','postalDistrict','postalTaluk','postalPincode','postalAddress'];
+    const complete = required.every(id => (document.getElementById(id)?.value || '').trim() !== '');
+    const pinOK = /^\d{6}$/.test(document.getElementById('postalPincode')?.value || '');
+    if (complete && pinOK) { event.stopImmediatePropagation(); event.preventDefault(); location.href = '2.html'; }
+  }, true);
+})();
+</script><script>document.addEventListener('DOMContentLoaded',()=>{const job=new URLSearchParams(location.search).get('job');if(job)document.getElementById('jobAppliedTitle').textContent='JOB APPLIED: '+job;});</script><script>document.addEventListener('DOMContentLoaded',()=>{const c=document.getElementById('sameAsPostal');c?.addEventListener('change',()=>{if(!c.checked)return;setTimeout(()=>['State','District','Taluk'].forEach(x=>{const a=document.getElementById('postal'+x),b=document.getElementById('permanent'+x);if(a&&b){b.innerHTML=a.innerHTML;b.value=a.value;b.disabled=false;b.style.pointerEvents='auto';b.style.backgroundColor='';}}),250);});});</script></body></html>
