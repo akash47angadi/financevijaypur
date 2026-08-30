@@ -667,4 +667,4 @@
   <script src="./0_1_files/comman.js.download"></script>
 
 
-<script>document.getElementById('job_select')?.addEventListener('submit',function(e){e.preventDefault();const job=document.getElementById('job')?.value;if(!job){document.getElementById('job_err').textContent='Please select a job.';return}const name=document.getElementById('job').selectedOptions[0].textContent.trim();location.href='1.html?job='+encodeURIComponent(name)})</script></body></html>
+<script>document.getElementById('job_select')?.addEventListener('submit',function(e){e.preventDefault();const job=document.getElementById('job')?.value;if(!job){document.getElementById('job_err').textContent='Please select a job.';return}const name=document.getElementById('job').selectedOptions[0].textContent.trim();sessionStorage.setItem('selectedJob',name);location.href='1.html?job='+encodeURIComponent(name)})</script></body></html>
