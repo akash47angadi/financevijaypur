@@ -23,6 +23,29 @@
     :root{--teal:#9b7bb5;--paper:#fff;--navy:#6f5690}.brand h1,.brand p{color:#6f5690}.notice strong{color:#6f5690}.notice a{color:#6f5690}.btn-blue{background:#9b7bb5}.btn-teal{background:#9b7bb5}.section-title{background:#9b7bb5}.success-banner{background:#20a647}.app-info .value{color:#6f5690}.step.completed{background:#20a647}.steps .step:not(.completed){background:#9b7bb5}.field,select,textarea{font-weight:700;color:#354052}
     .education-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 20px;padding:20px}.education-card{border:1px solid #d7dee6;margin:14px 20px;padding:14px}.education-card h4{margin:0 0 12px;color:#6f5690}.education-card .mark-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.skills-box{padding:20px}.skills-box textarea{width:100%;min-height:100px;border:1px solid #cbd5df;border-radius:4px;padding:12px;font-size:14px}.preview-button{margin-left:10px;padding:7px 12px;border:0;border-radius:4px;background:#9b7bb5;color:white;font-weight:700;cursor:pointer}
   </style>
+  <style>
+    /* Reference layout: warm gradient header, peach page background, and card-based application form. */
+    body{background:linear-gradient(115deg,#fff0da 0%,#fff7f0 48%,#fff0f5 100%);font-family:Arial,Helvetica,sans-serif;color:#172033}
+    .topline{height:10px;background:#193b3b}
+    header{background:linear-gradient(110deg,#ffbd16 0%,#ff7600 52%,#ff2938 100%);border:0;color:#fff}
+    .masthead{min-height:164px;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:18px 12px}
+    .seal{width:72px;height:72px;border-color:#f4d37b;background:radial-gradient(circle,#ffb300 0 35%,#fff3b0 36% 42%,#d44519 43% 64%,#ffe28a 65%);font-size:17px}
+    .brand h1,.brand p,.brand .address{color:#fff;text-shadow:0 1px 1px #9e2700}
+    .brand h1{font-size:21px;letter-spacing:0}.brand p{display:none}.brand .address{display:none}
+    .utility{background:transparent;border:0}.utility-inner{display:none}
+    .layout{display:block;max-width:1180px;min-height:calc(100vh - 174px);border:0;background:transparent}.help{display:none}main{padding:28px 18px 55px}
+    #register{max-width:1040px;margin:0 auto}.registration{padding:0;border:0;border-radius:14px;box-shadow:0 10px 35px #8c5b4826;background:transparent;display:grid;grid-template-columns:minmax(230px,.72fr) minmax(0,1.8fr);gap:18px}
+    .registration:before{content:'JOB APPLIED\\A Junior Manager\\A\\A Notices\\A\\A • All documents should be uploaded as PDF or image files.\\A • Photo and signature must be image files.\\A • Maximum file size: 512 KB.';white-space:pre-line;display:block;background:#fff;border-radius:14px;padding:28px 22px;color:#152033;font-size:15px;line-height:1.65;box-shadow:0 8px 24px #8c5b4820;align-self:start}
+    .registration .section-title{grid-column:2;background:#ff6d2d;border-radius:14px 14px 0 0;text-align:center;font-size:22px;padding:18px;text-transform:uppercase;letter-spacing:.3px}
+    .registration .form{grid-column:2;background:#fff;border-radius:0 0 14px 14px;padding:24px 28px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px}
+    .registration .form-row{display:flex;flex-direction:column;gap:6px;margin:0}.registration .label{padding:0;font-size:14px;color:#263247}.registration .label small{font-size:12px;color:#6b7280}.registration .field,.registration select{height:42px;border:1px solid #cbd5e1;border-radius:7px;padding:0 12px;font-weight:400;color:#1f2937;background:#fff}.registration .date-fields{gap:8px}
+    .registration .form-row:nth-of-type(10),.registration .declaration,.registration .error,.registration form>div:last-child{grid-column:1/-1}
+    .registration .declaration{margin-top:4px;border:1px solid #fed7aa;border-radius:9px;background:#fffaf4}.registration .declaration-head{background:#fff0dc;border:0;color:#c2410c;font-weight:700}.registration .declaration-body{color:#9a3412;padding:14px 18px;font-size:13px}.registration .agree{padding:0 0 15px}
+    .registration .btn-blue{background:#ff6b2b;border-radius:8px;padding:13px 28px}.registration .btn-blue:hover{background:#e95519}
+    #application,#qualification,#reservation,#documents,#declaration{max-width:1040px;margin:auto}
+    .section-title{background:#ff6b2b}.steps .step:not(.completed){background:#f97316}.btn-blue,.btn-teal{background:#f97316}
+    @media(max-width:760px){main{padding:16px 10px 35px}.registration{display:block}.registration:before{margin-bottom:14px}.registration .section-title{font-size:18px;border-radius:12px 12px 0 0}.registration .form{display:block;border-radius:0 0 12px 12px;padding:18px}.registration .form-row{margin-bottom:16px}.registration .declaration{margin-top:5px}.brand h1{font-size:19px}}
+  </style>
 </head>
 <body>
   <div class="topline"></div>
