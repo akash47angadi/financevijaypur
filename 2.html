@@ -1,6 +1,32 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('form');
+  const education = document.getElementById('education-card');
+  if (!form || !education) return;
+  const requiredIds = ['sslcBoard','sslcTotalMarks','sslcObtainedMarks','sslcMarksCard','pucBoard','pucTotalMarks','pucObtainedMarks','pucMarksCard','degreeName','degreeTotalMarks','degreeObtainedMarks','degreeMarksCard'];
+  const clear = field => field?.setCustomValidity('');
+  requiredIds.forEach(id => document.getElementById(id)?.addEventListener('input', e => clear(e.target)));
+  requiredIds.forEach(id => document.getElementById(id)?.addEventListener('change', e => clear(e.target)));
+  ['others','others_puc','others_degree'].forEach(id => document.getElementById(id)?.addEventListener('input', e => clear(e.target)));
+  const validateEducation = () => {
+    let valid = true;
+    const require = (id, message) => { const field = document.getElementById(id); if (!field) return; if (!field.value || (field.type === 'file' && !field.files?.length)) { field.setCustomValidity(message); valid = false; } else field.setCustomValidity(''); };
+    require('sslcBoard','Please provide SSLC board.'); require('sslcTotalMarks','Please provide SSLC total marks.'); require('sslcObtainedMarks','Please provide SSLC obtained marks.'); require('sslcMarksCard','Please provide SSLC marks card.');
+    require('pucBoard','Please provide PUC board.'); require('pucTotalMarks','Please provide PUC total marks.'); require('pucObtainedMarks','Please provide PUC obtained marks.'); require('pucMarksCard','Please provide PUC marks card.');
+    require('degreeName','Please provide degree.'); require('degreeTotalMarks','Please provide degree total marks.'); require('degreeObtainedMarks','Please provide degree obtained marks.'); require('degreeMarksCard','Please provide degree marks card.');
+    [['sslcBoard','others'],['pucBoard','others_puc'],['degreeName','others_degree']].forEach(([selectId,otherId]) => { const select=document.getElementById(selectId), other=document.getElementById(otherId); if (select?.value.toLowerCase()==='others' && other && !other.value.trim()) { other.setCustomValidity('Please specify the other option.'); valid=false; } });
+    return valid;
+  };
+  document.addEventListener('click', event => {
+    const button = event.target.closest('#education-card button');
+    if (!button || button.textContent.trim().toLowerCase() !== 'next') return;
+    if (!validateEducation() || !form.checkValidity()) { event.preventDefault(); event.stopImmediatePropagation(); form.reportValidity(); }
+  }, true);
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('form');
   const educationCard = document.getElementById('education-card');
   const nextButton = educationCard && [...educationCard.querySelectorAll('button')].find(button => button.textContent.trim().toLowerCase() === 'next');
   const goNext = event => {
