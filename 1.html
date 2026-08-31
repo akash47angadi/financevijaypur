@@ -1227,9 +1227,7 @@
       <label class="text-sm">Taluk <span class="text-red-500">*</span> <span id="talukLoading" class="hidden text-blue-600 text-xs">
         <i class="fas fa-spinner fa-spin"></i> Loading...
     </span></label>
-      <select id="postalTaluk" name="postalTaluk" class="w-full px-3 py-2 border rounded shadow-sm">
-        <option value="">Select Taluk</option>
-      </select>
+      <input type="text" id="postalTaluk" name="postalTaluk" placeholder="Enter Taluk" required class="w-full px-3 py-2 border rounded shadow-sm">
       <span id="postalTalukError" class="text-xs text-red-500"></span>
     </div>
 
@@ -1436,11 +1434,7 @@
         Taluk <span class="text-red-500">*</span>
       </label>
 
-      <select id="permanentTaluk" name="permanentTaluk" class="w-full px-3 py-2 border rounded shadow-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-        <option value="">Select Taluk</option>
-
-      </select>
+      <input type="text" id="permanentTaluk" name="permanentTaluk" placeholder="Enter Taluk" required class="w-full px-3 py-2 border rounded shadow-sm">
 
       <span id="permanentTalukError" class="text-xs text-red-500"></span>
     </div>
@@ -2046,44 +2040,65 @@ const BASE_URL = "https://ssbankvijaypur.com/public/assets/json";
   <script src="./1_files/sweetalertv2.js.download"></script>
   <script src="./1_files/cropper.min.js.download"></script>
   <script src="./1_files/jquery.toast.js.download"></script>
-  <script src="./1_files/address.js.download"></script>
   <script src="./1_files/comman.js.download"></script>
 
 
 
 
-<script>
-(() => {
-  const districts = ['Bagalkote','Ballari','Belagavi','Bengaluru Rural','Bengaluru Urban','Bidar','Dharwad','Gadag','Hassan','Haveri','Kalaburagi','Koppal','Raichur','Shivamogga','Tumakuru','Udupi','Uttara Kannada','Vijayapura','Yadgir'];
-  const fill = (id, values, label) => { const el=document.getElementById(id); if(!el) return; const old=el.value; el.innerHTML='<option value="">Select '+label+'</option>'+values.map(v=>`<option value="${v}">${v}</option>`).join(''); if(values.includes(old)) el.value=old; el.disabled=false; };
-  const talukMap = {
-    'Vijayapura': ['Almel','Babaleshwar','Basavana Bagevadi','Chadchan','Devara Hipparagi','Indi','Kolhar','Muddebihal','Nidagundi','Sindgi','Talikoti','Tikota','Vijayapura']
-  };
-  const fillTalukFallback = prefix => {
-    const district = document.getElementById(prefix+'District')?.value;
-    const taluks = talukMap[district] || ['Select a district first'];
-    const el = document.getElementById(prefix+'Taluk');
-    if (el && el.options.length <= 1) fill(prefix+'Taluk', taluks, 'Taluk');
-  };
-  ['postalState','permanentState'].forEach(stateId => document.getElementById(stateId)?.addEventListener('change', () => {
-    const prefix=stateId.startsWith('postal')?'postal':'permanent';
-    // address.js may finish its remote request after this event; apply the local fallback last.
-    setTimeout(() => { fill(prefix+'District', districts, 'District'); fillTalukFallback(prefix); }, 50);
-    setTimeout(() => { if ((document.getElementById(prefix+'District')?.options.length || 0) <= 1) fill(prefix+'District', districts, 'District'); }, 500);
-  }));
-  ['postalDistrict','permanentDistrict'].forEach(id => document.getElementById(id)?.addEventListener('change', () => {
-    const prefix=id.startsWith('postal')?'postal':'permanent';
-    setTimeout(() => fillTalukFallback(prefix), 50);
-  }));
-  document.querySelector('form')?.addEventListener('submit',e=>{e.preventDefault();location.href='2.html'});
-  const nextBasic = document.querySelector('.next-btn-basic');
-  nextBasic?.addEventListener('click', event => {
-    const required = ['candidateFName','parentName','gender','casteCategory','dateOfBirth','postalState','postalDistrict','postalTaluk','postalPincode','postalAddress'];
-    const complete = required.every(id => (document.getElementById(id)?.value || '').trim() !== '');
-    const pinOK = /^\d{6}$/.test(document.getElementById('postalPincode')?.value || '');
-    if (complete && pinOK) { event.stopImmediatePropagation(); event.preventDefault(); location.href = '2.html'; }
-  }, true);
-})();
-</script><script>document.addEventListener('DOMContentLoaded',()=>{const job=new URLSearchParams(location.search).get('job')||sessionStorage.getItem('selectedJob');if(job)document.getElementById('jobAppliedTitle').textContent='JOB APPLIED: '+job;});</script><script>document.addEventListener('DOMContentLoaded',()=>{const c=document.getElementById('sameAsPostal');c?.addEventListener('change',()=>{if(!c.checked)return;setTimeout(()=>['State','District','Taluk'].forEach(x=>{const a=document.getElementById('postal'+x),b=document.getElementById('permanent'+x);if(a&&b){b.innerHTML=a.innerHTML;b.value=a.value;b.disabled=false;b.style.pointerEvents='auto';b.style.backgroundColor='';}}),250);});});</script><script>document.addEventListener('DOMContentLoaded',()=>{const cat=document.getElementById('casteCategory'),cert=document.getElementById('caste_certificate'),dob=document.getElementById('dateOfBirth'),err=document.getElementById('dateOfBirthError');const age=()=>{if(!dob?.value)return true;const d=new Date(dob.value+'T00:00:00'),n=new Date();let a=n.getFullYear()-d.getFullYear();if(n<new Date(n.getFullYear(),d.getMonth(),d.getDate()))a--;const v=(cat?.value||'').toLowerCase(),max=v==='gm'?35:['sc','st','cat-1'].includes(v)?40:38;if(a<18||a>max){if(err)err.textContent='Age must be between 18 and '+max+' years for this category.';return false;}if(err)err.textContent='';return true;};const sync=()=>{const required=!!cat?.value&&cat.value.toLowerCase()!=='gm';if(cert){cert.classList.toggle('hidden',!required);cert.required=required;if(!required)cert.value='';}};cat?.addEventListener('change',()=>{sync();age();});dob?.addEventListener('change',age);sync();document.querySelector('.next-btn-basic')?.addEventListener('click',e=>{if(!age()||(cert?.required&&!cert.value)){e.preventDefault();e.stopImmediatePropagation();}},true);});</script><script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const job=new URLSearchParams(location.search).get('job')||sessionStorage.getItem('selectedJob');if(job)document.getElementById('jobAppliedTitle').textContent='JOB APPLIED: '+job;});</script><script>document.addEventListener('DOMContentLoaded',()=>{const c=document.getElementById('sameAsPostal');c?.addEventListener('change',()=>{if(!c.checked)return;setTimeout(()=>['State','District','Taluk'].forEach(x=>{const a=document.getElementById('postal'+x),b=document.getElementById('permanent'+x);if(a&&b){b.innerHTML=a.innerHTML;b.value=a.value;b.disabled=false;b.style.pointerEvents='auto';b.style.backgroundColor='';}}),250);});});</script><script>document.addEventListener('DOMContentLoaded',()=>{const cat=document.getElementById('casteCategory'),cert=document.getElementById('caste_certificate'),dob=document.getElementById('dateOfBirth'),err=document.getElementById('dateOfBirthError');const age=()=>{if(!dob?.value)return true;const d=new Date(dob.value+'T00:00:00'),n=new Date();let a=n.getFullYear()-d.getFullYear();if(n<new Date(n.getFullYear(),d.getMonth(),d.getDate()))a--;const v=(cat?.value||'').toLowerCase(),max=v==='gm'?35:['sc','st','cat-1'].includes(v)?40:38;if(a<18||a>max){if(err)err.textContent='Age must be between 18 and '+max+' years for this category.';return false;}if(err)err.textContent='';return true;};const sync=()=>{const required=!!cat?.value&&cat.value.toLowerCase()!=='gm';if(cert){cert.classList.toggle('hidden',!required);cert.required=required;if(!required)cert.value='';}};cat?.addEventListener('change',()=>{sync();age();});dob?.addEventListener('change',age);sync();document.querySelector('.next-btn-basic')?.addEventListener('click',e=>{if(!age()||(cert?.required&&!cert.value)){e.preventDefault();e.stopImmediatePropagation();}},true);});</script><script>
 document.addEventListener('DOMContentLoaded',()=>{const d=document.getElementById('postalDistrict'),t=document.getElementById('postalTaluk');const vals=['Almel','Babaleshwar','Basavana Bagevadi','Chadchan','Devara Hipparagi','Indi','Kolhar','Muddebihal','Nidagundi','Sindgi','Talikoti','Tikota','Vijayapura'];const fix=()=>{if(d?.value==='Vijayapura'&&t&&t.options.length<=1){t.innerHTML='<option value="">Select Taluk</option>'+vals.map(v=>'<option value="'+v+'">'+v+'</option>').join('');t.disabled=false;}};d?.addEventListener('change',()=>{fix();setTimeout(fix,250);setTimeout(fix,800);});setInterval(fix,500);});
+</script><script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const postalState = document.getElementById("postalState");
+  const postalDistrict = document.getElementById("postalDistrict");
+  const permanentState = document.getElementById("permanentState");
+  const permanentDistrict = document.getElementById("permanentDistrict");
+  if (!postalState || !postalDistrict) return;
+  let geography = [];
+  try {
+    const response = await fetch("./india-states-districts-latest.json");
+    if (!response.ok) throw new Error("Unable to load geographic data");
+    geography = await response.json();
+  } catch (error) {
+    console.error(error);
+    alert("Geographic data could not be loaded. Please refresh the page.");
+    return;
+  }
+  const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+  }[character]));
+  const populateStates = select => {
+    if (!select) return;
+    select.innerHTML = '<option value="">Select State</option>' +
+      geography.map(item => '<option value="' + escapeHtml(item.state) + '">' +
+        escapeHtml(item.state) + '</option>').join("");
+  };
+  const populateDistricts = (stateSelect, districtSelect) => {
+    if (!stateSelect || !districtSelect) return;
+    const selectedState = geography.find(item => item.state === stateSelect.value);
+    districtSelect.innerHTML = '<option value="">Select District</option>' +
+      (selectedState?.districts || []).map(district =>
+        '<option value="' + escapeHtml(district) + '">' +
+        escapeHtml(district) + '</option>').join("");
+    districtSelect.disabled = !selectedState;
+  };
+  populateStates(postalState);
+  populateStates(permanentState);
+  postalDistrict.disabled = true;
+  if (permanentDistrict) permanentDistrict.disabled = true;
+  postalState.addEventListener("change", () => populateDistricts(postalState, postalDistrict));
+  permanentState?.addEventListener("change", () =>
+    populateDistricts(permanentState, permanentDistrict));
+  document.getElementById("sameAsPostal")?.addEventListener("change", event => {
+    if (!event.target.checked) return;
+    if (permanentState) {
+      permanentState.value = postalState.value;
+      populateDistricts(permanentState, permanentDistrict);
+      permanentDistrict.value = postalDistrict.value;
+    }
+    const postalTaluk = document.getElementById("postalTaluk");
+    const permanentTaluk = document.getElementById("permanentTaluk");
+    if (permanentTaluk) permanentTaluk.value = postalTaluk?.value || "";
+  });
+});
 </script></body></html>
