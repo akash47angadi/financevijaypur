@@ -2144,4 +2144,115 @@ const BASE_URL = "https://ssbankvijaypur.com/public/assets/json";
 
 
 
-<script>document.querySelector('form')?.addEventListener('submit',e=>{e.preventDefault();location.href='3.html'});document.addEventListener('DOMContentLoaded',()=>{['basic-card','skills-card','payment-card','preview-card','ack-card'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));['pre-basic-card','education-card'].forEach(id=>document.getElementById(id)?.classList.remove('hidden'));});</script><script>document.addEventListener('DOMContentLoaded',()=>{const c=document.getElementById('sameAsPostal');c?.addEventListener('change',()=>{if(!c.checked)return;setTimeout(()=>['State','District','Taluk'].forEach(x=>{const a=document.getElementById('postal'+x),b=document.getElementById('permanent'+x);if(a&&b){b.innerHTML=a.innerHTML;b.value=a.value;b.disabled=false;b.style.pointerEvents='auto';b.style.backgroundColor='';}}),250);});});</script></body></html>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const MAX_FILE_SIZE = 512 * 1024;
+  function setFieldValue(id, value) {
+    const field = document.getElementById(id);
+    if (field) field.value = value;
+  }
+  function updateMarks(prefix) {
+    const total = Number.parseFloat(document.getElementById(`${prefix}TotalMarks`)?.value);
+    const obtained = Number.parseFloat(document.getElementById(`${prefix}ObtainedMarks`)?.value);
+    const percentageField = document.getElementById(`${prefix}Percentage`);
+    const cgpaField = document.getElementById(`${prefix}CGPA`);
+    const error = document.getElementById(`${prefix}MarksError`);
+    if (error) error.textContent = '';
+    if (!Number.isFinite(total) || !Number.isFinite(obtained) || total <= 0 || obtained < 0) {
+      setFieldValue(`${prefix}Percentage`, '');
+      setFieldValue(`${prefix}CGPA`, '');
+      return;
+    }
+    if (obtained > total) {
+      setFieldValue(`${prefix}Percentage`, '');
+      setFieldValue(`${prefix}CGPA`, '');
+      if (error) error.textContent = 'Obtained marks cannot be greater than total marks.';
+      return;
+    }
+    const percentage = (obtained / total) * 100;
+    const cgpa = percentage / 9.5;
+    if (percentageField) percentageField.value = percentage.toFixed(2);
+    if (cgpaField) cgpaField.value = cgpa.toFixed(2);
+  }
+  ['sslc', 'puc', 'degree'].forEach(prefix => {
+    ['TotalMarks', 'ObtainedMarks'].forEach(suffix => {
+      document.getElementById(`${prefix}${suffix}`)?.addEventListener('input', () => updateMarks(prefix));
+    });
+    updateMarks(prefix);
+  });
+  function toggleOther(selectId, inputId) {
+    const select = document.getElementById(selectId);
+    const input = document.getElementById(inputId);
+    if (!select || !input) return;
+    const update = () => {
+      const isOther = select.value.toLowerCase() === 'others';
+      input.classList.toggle('hidden', !isOther);
+      input.required = isOther;
+      if (!isOther) input.value = '';
+    };
+    select.addEventListener('change', update);
+    update();
+  }
+  toggleOther('sslcBoard', 'others');
+  toggleOther('pucBoard', 'others_puc');
+  function showFileError(errorId, message) {
+    const error = document.getElementById(errorId);
+    if (error) error.textContent = message;
+  }
+  function previewFile(inputId, previewId, errorId) {
+    const input = document.getElementById(inputId);
+    const image = document.getElementById(previewId);
+    if (!input || !image) return;
+    let objectUrl = null;
+    let pdfPreview = document.getElementById(`${previewId}Pdf`);
+    if (!pdfPreview) {
+      pdfPreview = document.createElement('iframe');
+      pdfPreview.id = `${previewId}Pdf`;
+      pdfPreview.title = 'Document preview';
+      pdfPreview.className = 'mt-2 w-full border rounded';
+      pdfPreview.style.height = '260px';
+      pdfPreview.style.display = 'none';
+      image.insertAdjacentElement('afterend', pdfPreview);
+    }
+    const clearPreview = () => {
+      image.classList.add('hidden');
+      image.style.display = 'none';
+      pdfPreview.style.display = 'none';
+      pdfPreview.removeAttribute('src');
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+        objectUrl = null;
+      }
+    };
+    input.addEventListener('change', () => {
+      clearPreview();
+      showFileError(errorId, '');
+      const file = input.files?.[0];
+      if (!file) return;
+      if (file.size > MAX_FILE_SIZE) {
+        input.value = '';
+        showFileError(errorId, '⚠ File size must be less than 512 KB.');
+        return;
+      }
+      objectUrl = URL.createObjectURL(file);
+      if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+        pdfPreview.src = objectUrl;
+        pdfPreview.style.display = 'block';
+      } else if (file.type.startsWith('image/')) {
+        image.src = objectUrl;
+        image.classList.remove('hidden');
+        image.style.display = 'block';
+      } else {
+        input.value = '';
+        showFileError(errorId, '⚠ Please select a PDF or image file.');
+        clearPreview();
+      }
+    });
+  }
+  previewFile('sslcMarksCard', 'SSLCPreview', 'sslcMarksCardError');
+  previewFile('pucMarksCard', 'PUCPreview', 'pucMarksCardError');
+  previewFile('degreeMarksCard', 'DegreePreview', 'degreeMarksCardError');
+  });
+  </script>
+  </body>
+  </html>
