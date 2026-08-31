@@ -1,4 +1,155 @@
 <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const previewCard = document.getElementById('preview-card');
+  const previewContent = document.getElementById('previewContent');
+  const skillsCard = document.getElementById('skills-card');
+  const languageCard = document.getElementById('languages-card');
+  const paymentCard = document.getElementById('payment-card');
+  if (!previewCard || !previewContent || !skillsCard) return;
+
+  const escapeHtml = value => String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+  const valueOf = id => document.getElementById(id)?.value?.trim() || 'Not provided';
+  const selectedOf = id => {
+    const field = document.getElementById(id);
+    return field?.selectedOptions?.[0]?.textContent?.trim() || valueOf(id);
+  };
+
+  const row = (label, value) => `
+    <div class="rounded border bg-white p-3">
+      <span class="font-semibold">${escapeHtml(label)}:</span>
+      <span>${escapeHtml(value)}</span>
+    </div>`;
+
+  const section = (title, contents) => `
+    <section class="rounded-lg bg-gray-50 p-4 shadow-sm">
+      <h4 class="mb-3 border-b pb-2 text-lg font-semibold">${escapeHtml(title)}</h4>
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">${contents}</div>
+    </section>`;
+
+  const checkedSkills = (prefix, labels) => labels
+    .filter(([suffix]) => document.getElementById(`${prefix}${suffix}`)?.checked)
+    .map(([, label]) => label)
+    .join(', ') || 'Don\'t Know';
+
+  const fileName = id => document.getElementById(id)?.files?.[0]?.name || 'Not uploaded';
+  const imagePreview = id => {
+    const src = document.getElementById(id)?.getAttribute('src');
+    if (!src || src.startsWith('https://ssbankvijaypur.com')) return '';
+    return `<img src="${escapeHtml(src)}" alt="Preview" class="max-h-40 max-w-xs rounded border object-contain">`;
+  };
+
+  const renderPreview = () => {
+    previewContent.innerHTML = `
+      <div class="space-y-5 text-sm">
+        <h4 class="text-xl font-semibold">Preview Your Details</h4>
+        ${section('Personal Information', [
+          row('First Name', valueOf('firstName')),
+          row('Parent Name', valueOf('parentName')),
+          row('Last Name', valueOf('lastName')),
+          row('Mobile', valueOf('mobile')),
+          row('Email', valueOf('email')),
+          row('Date of Birth', valueOf('dateOfBirth')),
+          row('Gender', selectedOf('gender')),
+          row('Category', selectedOf('casteCategory')),
+          row('Religion / Caste', valueOf('religion')),
+          row('Nationality', valueOf('nationality')),
+          row('X-Army', document.querySelector('input[name="xArmy"]:checked')?.value || 'Not provided')
+        ].join(''))}
+        ${section('Postal Address', [
+          row('State', selectedOf('postalState')),
+          row('District', selectedOf('postalDistrict')),
+          row('Taluk', valueOf('postalTaluk')),
+          row('PIN Code', valueOf('postalPincode')),
+          row('Address', valueOf('postalAddress'))
+        ].join(''))}
+        ${section('Permanent Address', [
+          row('State', selectedOf('permanentState')),
+          row('District', selectedOf('permanentDistrict')),
+          row('Taluk', valueOf('permanentTaluk')),
+          row('PIN Code', valueOf('permanentPincode')),
+          row('Address', valueOf('permanentAddress'))
+        ].join(''))}
+        ${section('Education Details', [
+          row('SSLC Board', selectedOf('sslcBoard')),
+          row('SSLC Total / Obtained', `${valueOf('sslcTotalMarks')} / ${valueOf('sslcObtainedMarks')}`),
+          row('SSLC Percentage', valueOf('sslcPercentage')),
+          row('SSLC CGPA', valueOf('sslcCGPA')),
+          row('SSLC Marks Card', fileName('sslcMarksCard')),
+          row('PUC Board', selectedOf('pucBoard')),
+          row('PUC Total / Obtained', `${valueOf('pucTotalMarks')} / ${valueOf('pucObtainedMarks')}`),
+          row('PUC Percentage', valueOf('pucPercentage')),
+          row('PUC CGPA', valueOf('pucCGPA')),
+          row('PUC Marks Card', fileName('pucMarksCard')),
+          row('Degree', selectedOf('degreeName')),
+          row('Degree Total / Obtained', `${valueOf('degreeTotalMarks')} / ${valueOf('degreeObtainedMarks')}`),
+          row('Degree Percentage', valueOf('degreePercentage')),
+          row('Degree CGPA', valueOf('degreeCGPA')),
+          row('Degree Marks Card', fileName('degreeMarksCard'))
+        ].join(''))}
+        ${section('Language Details', [
+          row('Kannada', checkedSkills('kannada', [['Speak', 'Speak'], ['Read', 'Read'], ['Write', 'Write'], ['DT', "Don't Know"]])),
+          row('English', checkedSkills('english', [['Speak', 'Speak'], ['Read', 'Read'], ['Write', 'Write'], ['DT', "Don't Know"]])),
+          row('Hindi', checkedSkills('hindi', [['Speak', 'Speak'], ['Read', 'Read'], ['Write', 'Write'], ['DT', "Don't Know"]]))
+        ].join(''))}
+        ${section('Skills / Experience Details', [
+          row('Previous Experience', valueOf('experienceDetails')),
+          row('Experience Certificate', fileName('experienceCertificate'))
+        ].join(''))}
+        <section class="rounded-lg bg-gray-50 p-4 shadow-sm">
+          <h4 class="mb-3 border-b pb-2 text-lg font-semibold">Photo and Document Previews</h4>
+          <div class="flex flex-wrap gap-6">
+            <div><p class="mb-2 font-semibold">Candidate Photo</p>${imagePreview('candidatePhotoPreview') || '<p>Not available</p>'}</div>
+            <div><p class="mb-2 font-semibold">Candidate Signature</p>${imagePreview('candidateSignPreview') || '<p>Not available</p>'}</div>
+            <div><p class="mb-2 font-semibold">SSLC Marks Card</p>${imagePreview('SSLCPreview') || `<p>${escapeHtml(fileName('sslcMarksCard'))}</p>`}</div>
+            <div><p class="mb-2 font-semibold">PUC Marks Card</p>${imagePreview('PUCPreview') || `<p>${escapeHtml(fileName('pucMarksCard'))}</p>`}</div>
+            <div><p class="mb-2 font-semibold">Degree Marks Card</p>${imagePreview('DegreePreview') || `<p>${escapeHtml(fileName('degreeMarksCard'))}</p>`}</div>
+          </div>
+        </section>
+      </div>`;
+  };
+
+  const show = card => card?.classList.remove('hidden');
+  const hide = card => card?.classList.add('hidden');
+
+  document.addEventListener('click', event => {
+    const button = event.target.closest('button');
+    if (!button) return;
+    const text = button.textContent.trim().toLowerCase();
+
+    if (skillsCard.contains(button) && text === 'next') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      renderPreview();
+      hide(languageCard);
+      hide(skillsCard);
+      hide(paymentCard);
+      show(previewCard);
+    }
+
+    if (previewCard.contains(button) && text === 'previous') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      hide(previewCard);
+      show(skillsCard);
+    }
+
+    if (previewCard.contains(button) && text === 'next') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      hide(previewCard);
+      show(paymentCard);
+    }
+  }, true);
+});
+</script>
+
+<script>
 document.addEventListener('DOMContentLoaded',()=>{[['kannadaSpeak','kannadaRead','kannadaWrite','kannadaDT'],['englishSpeak','englishRead','englishWrite','englishDT'],['hindiSpeak','hindiRead','hindiWrite','hindiDT']].forEach(g=>{const [s,r,w,d]=g.map(id=>document.getElementById(id));if(!s||!r||!w||!d)return;d.addEventListener('change',()=>{if(d.checked){s.checked=false;r.checked=false;w.checked=false}});[s,r,w].forEach(x=>x.addEventListener('change',()=>{if(x.checked)d.checked=false}))})});
 </script>
 <script>
