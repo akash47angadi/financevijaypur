@@ -2146,71 +2146,114 @@ const BASE_URL = "https://ssbankvijaypur.com/public/assets/json";
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const MAX_CGPA = 9.5;
+  const MAX_FILE_SIZE = 512 * 1024;
+  function setFieldValue(id, value) {
+    const field = document.getElementById(id);
+    if (field) field.value = value;
+  }
+  function updateMarks(prefix) {
+    const total = Number.parseFloat(document.getElementById(`${prefix}TotalMarks`)?.value);
+    const obtained = Number.parseFloat(document.getElementById(`${prefix}ObtainedMarks`)?.value);
+    const percentageField = document.getElementById(`${prefix}Percentage`);
+    const cgpaField = document.getElementById(`${prefix}CGPA`);
+    const error = document.getElementById(`${prefix}MarksError`);
+    if (error) error.textContent = '';
+    if (!Number.isFinite(total) || !Number.isFinite(obtained) || total <= 0 || obtained < 0) {
+      setFieldValue(`${prefix}Percentage`, '');
+      setFieldValue(`${prefix}CGPA`, '');
+      return;
+    }
+    if (obtained > total) {
+      setFieldValue(`${prefix}Percentage`, '');
+      setFieldValue(`${prefix}CGPA`, '');
+      if (error) error.textContent = 'Obtained marks cannot be greater than total marks.';
+      return;
+    }
+    const percentage = (obtained / total) * 100;
+    const cgpa = Math.min(percentage / 9.5, 9.5);
+    if (percentageField) percentageField.value = percentage.toFixed(2);
+    if (cgpaField) cgpaField.value = cgpa.toFixed(2);
+  }
   ['sslc', 'puc', 'degree'].forEach(prefix => {
-    const total = document.getElementById(`${prefix}TotalMarks`);
-    const obtained = document.getElementById(`${prefix}ObtainedMarks`);
-    const percentage = document.getElementById(`${prefix}Percentage`);
-    const cgpa = document.getElementById(`${prefix}CGPA`);
-    if (!total || !obtained || !percentage || !cgpa) return;
-    // Remove the old selector if the previous version was already added.
-    document.getElementById(`${prefix}ScoreType`)?.closest('[data-score-choice]')?.remove();
-    const selectorBox = document.createElement('div');
-    selectorBox.dataset.scoreChoice = 'true';
-    selectorBox.className = 'mb-3';
-    const label = document.createElement('label');
-    label.className = 'block mb-1 font-semibold';
-    label.textContent = 'Enter Result As';
-    const select = document.createElement('select');
-    select.id = `${prefix}ScoreType`;
-    select.name = `${prefix}ScoreType`;
-    select.className = 'w-full rounded border px-3 py-2';
-    select.innerHTML = '<option value="">Select Percentage or CGPA</option><option value="percentage">Percentage</option><option value="cgpa">CGPA</option>';
-    label.htmlFor = select.id;
-    selectorBox.append(label, select);
-    const percentageBox = percentage.parentElement;
-    const cgpaBox = cgpa.parentElement;
-    const totalBox = total.parentElement;
-    const obtainedBox = obtained.parentElement;
-    const row = percentage.closest('.grid') || percentageBox?.parentElement;
-    row?.parentElement?.insertBefore(selectorBox, row);
-    const setBoxState = (box, visible, enabled) => {
-      if (!box) return;
-      box.style.display = visible ? '' : 'none';
-      box.querySelectorAll('input, select, textarea').forEach(field => {
-        field.disabled = !enabled;
-      });
+    ['TotalMarks', 'ObtainedMarks'].forEach(suffix => {
+      document.getElementById(`${prefix}${suffix}`)?.addEventListener('input', () => updateMarks(prefix));
+    });
+    updateMarks(prefix);
+  });
+  function toggleOther(selectId, inputId) {
+    const select = document.getElementById(selectId);
+    const input = document.getElementById(inputId);
+    if (!select || !input) return;
+    const update = () => {
+      const isOther = select.value.toLowerCase() === 'others';
+      input.classList.toggle('hidden', !isOther);
+      input.required = isOther;
+      if (!isOther) input.value = '';
     };
-    const calculateFromMarks = () => {
-      const totalValue = Number.parseFloat(total.value);
-      const obtainedValue = Number.parseFloat(obtained.value);
-      if (!Number.isFinite(totalValue) || !Number.isFinite(obtainedValue) || totalValue <= 0 || obtainedValue < 0 || obtainedValue > totalValue) {
-        percentage.value = '';
+    select.addEventListener('change', update);
+    update();
+  }
+  toggleOther('sslcBoard', 'others');
+  toggleOther('pucBoard', 'others_puc');
+  function showFileError(errorId, message) {
+    const error = document.getElementById(errorId);
+    if (error) error.textContent = message;
+  }
+  function previewFile(inputId, previewId, errorId) {
+    const input = document.getElementById(inputId);
+    const image = document.getElementById(previewId);
+    if (!input || !image) return;
+    let objectUrl = null;
+    let pdfPreview = document.getElementById(`${previewId}Pdf`);
+    if (!pdfPreview) {
+      pdfPreview = document.createElement('iframe');
+      pdfPreview.id = `${previewId}Pdf`;
+      pdfPreview.title = 'Document preview';
+      pdfPreview.className = 'mt-2 w-full border rounded';
+      pdfPreview.style.height = '260px';
+      pdfPreview.style.display = 'none';
+      image.insertAdjacentElement('afterend', pdfPreview);
+    }
+    const clearPreview = () => {
+      image.classList.add('hidden');
+      image.style.display = 'none';
+      pdfPreview.style.display = 'none';
+      pdfPreview.removeAttribute('src');
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+        objectUrl = null;
+      }
+    };
+    input.addEventListener('change', () => {
+      clearPreview();
+      showFileError(errorId, '');
+      const file = input.files?.[0];
+      if (!file) return;
+      if (file.size > MAX_FILE_SIZE) {
+        input.value = '';
+        showFileError(errorId, '⚠ File size must be less than 512 KB.');
         return;
       }
-      const value = (obtainedValue / totalValue) * 100;
-      percentage.value = value.toFixed(2);
-    };
-    const updateLayout = () => {
-      const mode = select.value;
-      const percentageMode = mode === 'percentage';
-      const cgpaMode = mode === 'cgpa';
-      setBoxState(totalBox, percentageMode, percentageMode);
-      setBoxState(obtainedBox, percentageMode, percentageMode);
-      setBoxState(percentageBox, percentageMode, percentageMode);
-      setBoxState(cgpaBox, cgpaMode, cgpaMode);
-      percentage.readOnly = true;
-      cgpa.readOnly = !cgpaMode;
-      if (percentageMode) calculateFromMarks();
-    };
-    total.addEventListener('input', calculateFromMarks);
-    obtained.addEventListener('input', calculateFromMarks);
-    select.addEventListener('change', updateLayout);
-    updateLayout();
+      objectUrl = URL.createObjectURL(file);
+      if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+        pdfPreview.src = objectUrl;
+        pdfPreview.style.display = 'block';
+      } else if (file.type.startsWith('image/')) {
+        image.src = objectUrl;
+        image.classList.remove('hidden');
+        image.style.display = 'block';
+      } else {
+        input.value = '';
+        showFileError(errorId, '⚠ Please select a PDF or image file.');
+        clearPreview();
+      }
+    });
+  }
+  previewFile('sslcMarksCard', 'SSLCPreview', 'sslcMarksCardError');
+  previewFile('pucMarksCard', 'PUCPreview', 'pucMarksCardError');
+  previewFile('degreeMarksCard', 'DegreePreview', 'degreeMarksCardError');
   });
-});
-</script>
-
+  </script>
   </body>
   </html>
 
