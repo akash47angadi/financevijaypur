@@ -1,4 +1,7 @@
 <script>
+document.addEventListener('DOMContentLoaded',()=>{[['kannadaSpeak','kannadaRead','kannadaWrite','kannadaDT'],['englishSpeak','englishRead','englishWrite','englishDT'],['hindiSpeak','hindiRead','hindiWrite','hindiDT']].forEach(g=>{const [s,r,w,d]=g.map(id=>document.getElementById(id));if(!s||!r||!w||!d)return;d.addEventListener('change',()=>{if(d.checked){s.checked=false;r.checked=false;w.checked=false}});[s,r,w].forEach(x=>x.addEventListener('change',()=>{if(x.checked)d.checked=false}))})});
+</script>
+<script>
 document.addEventListener('DOMContentLoaded', () => {
   const language = document.getElementById('languages-card');
   const skills = document.getElementById('skills-card');
