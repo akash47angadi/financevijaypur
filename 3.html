@@ -1,3 +1,57 @@
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const language = document.getElementById('languages-card');
+  const skills = document.getElementById('skills-card');
+  const payment = document.getElementById('payment-card');
+  const form = document.querySelector('form');
+  if (!language || !skills) return;
+  const show = card => card?.classList.remove('hidden');
+  const hide = card => card?.classList.add('hidden');
+  const displayLanguage = () => { hide(skills); hide(payment); show(language); };
+  const displaySkills = () => { hide(language); hide(payment); show(skills); };
+  const displayPayment = () => { hide(language); hide(skills); show(payment); };
+  const button = (card, text) => [...card.querySelectorAll('button')].find(b => b.textContent.trim().toLowerCase() === text);
+  const languageGroups = [['kannadaSpeak','kannadaRead','kannadaWrite','kannadaDT'],['englishSpeak','englishRead','englishWrite','englishDT'],['hindiSpeak','hindiRead','hindiWrite','hindiDT']];
+  const validateLanguage = () => {
+    let valid = true;
+    languageGroups.forEach(group => {
+      const fields = group.map(id => document.getElementById(id)).filter(Boolean);
+      const first = fields[0];
+      if (!fields.some(field => field.checked)) { first?.setCustomValidity('Select at least one language skill.'); valid = false; } else fields.forEach(field => field.setCustomValidity(''));
+    });
+    return valid;
+  };
+  languageGroups.flat().forEach(id => document.getElementById(id)?.addEventListener('change', validateLanguage));
+  const experience = document.getElementById('experienceDetails');
+  const certificate = document.getElementById('experienceCertificate');
+  const validateSkills = () => {
+    let valid = true;
+    const text = (experience?.value || '').trim();
+    if (!text) { experience?.setCustomValidity('Please provide previous experience or type NA.'); valid = false; } else experience?.setCustomValidity('');
+    const isNA = text.toUpperCase() === 'NA';
+    if (!isNA && certificate && !certificate.files?.length) { certificate.setCustomValidity('Please provide experience certificate.'); valid = false; } else certificate?.setCustomValidity('');
+    return valid;
+  };
+  experience?.addEventListener('input', validateSkills);
+  certificate?.addEventListener('change', validateSkills);
+  // Run after the existing page setup so Skills does not appear beside Language.
+  setTimeout(displayLanguage, 0);
+  document.addEventListener('click', event => {
+    const target = event.target.closest('button');
+    if (!target) return;
+    const text = target.textContent.trim().toLowerCase();
+    if (language.contains(target) && text === 'next') {
+      if (!validateLanguage()) { event.preventDefault(); event.stopImmediatePropagation(); form?.reportValidity(); return; }
+      event.preventDefault(); event.stopImmediatePropagation(); displaySkills();
+    } else if (skills.contains(target) && text === 'previous') {
+      event.preventDefault(); event.stopImmediatePropagation(); displayLanguage();
+    } else if (skills.contains(target) && text === 'next') {
+      if (!validateSkills()) { event.preventDefault(); event.stopImmediatePropagation(); form?.reportValidity(); return; }
+      event.preventDefault(); event.stopImmediatePropagation(); displayPayment();
+    }
+  }, true);
+});
+</script>
 <!DOCTYPE html>
 <!-- saved from url=(0095)https://ssbankvijaypur.com/index.php/AddApplicantDetails/SkIwMDAx/SnVuaW9yIE1hbmFnZXI=/MTIwMA== -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
