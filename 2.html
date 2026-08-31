@@ -2256,3 +2256,10 @@ document.addEventListener('DOMContentLoaded', () => {
   </script>
   </body>
   </html>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  ['basic-card', 'skills-card', 'payment-card', 'preview-card', 'ack-card'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
+  ['pre-basic-card', 'education-card'].forEach(id => document.getElementById(id)?.classList.remove('hidden'));
+});
+</script>
