@@ -2171,7 +2171,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     const percentage = (obtained / total) * 100;
-    const cgpa = percentage / 9.5;
+    const cgpa = Math.min(percentage / 9.5, 9.5);
     if (percentageField) percentageField.value = percentage.toFixed(2);
     if (cgpaField) cgpaField.value = cgpa.toFixed(2);
   }
