@@ -1,3 +1,17 @@
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('form');
+  const educationCard = document.getElementById('education-card');
+  const nextButton = educationCard && [...educationCard.querySelectorAll('button')].find(button => button.textContent.trim().toLowerCase() === 'next');
+  const goNext = event => {
+    event?.preventDefault();
+    window.location.href = '3.html';
+  };
+  nextButton?.removeAttribute('disabled');
+  nextButton?.addEventListener('click', goNext);
+  form?.addEventListener('submit', goNext);
+});
+</script>
 <!DOCTYPE html>
 <!-- saved from url=(0095)https://ssbankvijaypur.com/index.php/AddApplicantDetails/SkIwMDAx/SnVuaW9yIE1hbmFnZXI=/MTIwMA== -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
