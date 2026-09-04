@@ -2603,6 +2603,8 @@ jobs.forEach(([code,name,fee])=>{
     jobs.hidden=true;
     application.hidden=true;
     window.scrollTo(0,0);
+    // Landing page should have a clean URL with no hash fragment.
+    history.replaceState({page:'landing'},'', window.location.pathname + window.location.search);
   }
 
   function showJobs(){
@@ -2679,7 +2681,6 @@ jobs.forEach(([code,name,fee])=>{
     )){
       e.preventDefault();
       showLanding();
-      history.replaceState({page:'landing'},'', '#landing');
       return;
     }
 
